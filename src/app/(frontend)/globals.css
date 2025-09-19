@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+/* Police Nectarine locale */
+@font-face {
+  font-family: 'Nectarine';
+  src: url('/nectarine/Nectarine DEMO.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,73 +25,75 @@
   }
 
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* TERRA Theme - Light Mode */
+    --background: 255 255 255; /* pure white */
+    --foreground: 26 26 26; /* urban-black */
 
-    --card: 240 5% 96%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 255 255 255;
+    --card-foreground: 26 26 26;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 255 255 255;
+    --popover-foreground: 26 26 26;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: #169b78; /* terra-green */
+    --primary-foreground: 245 245 240;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 156 175 136; /* sage-green */
+    --secondary-foreground: 26 26 26;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 250 250 250;
+    --muted-foreground: 115 115 115;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 45 90 39; /* terra-green */
+    --accent-foreground: 255 255 255;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 6% 80%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 228 228 228;
+    --input: 250 250 250;
+    --ring: 45 90 39;
 
-    --radius: 0.2rem;
+    --radius: 0.5rem;
 
-    --success: 196 52% 74%;
-    --warning: 34 89% 85%;
-    --error: 10 100% 86%;
+    --success: 45 90 39;
+    --warning: 45 90 39;
+    --error: 220 38 38;
   }
 
   [data-theme='dark'] {
-    --background: 0 0% 0%;
-    --foreground: 210 40% 98%;
+    /* TERRA Theme - Dark Mode */
+    --background: 26 26 26; /* urban-black */
+    --foreground: 255 255 255; /* white */
 
-    --card: 0 0% 4%;
-    --card-foreground: 210 40% 98%;
+    --card: 38 38 38;
+    --card-foreground: 255 255 255;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 38 38 38;
+    --popover-foreground: 255 255 255;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 45 90 39; /* terra-green */
+    --primary-foreground: 255 255 255;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 156 175 136; /* sage-green */
+    --secondary-foreground: 26 26 26;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 64 64 64;
+    --muted-foreground: 163 163 163;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 45 90 39; /* terra-green */
+    --accent-foreground: 255 255 255;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 220 38 38;
+    --destructive-foreground: 255 255 255;
 
-    --border: 0, 0%, 15%, 0.8;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 64 64 64;
+    --input: 38 38 38;
+    --ring: 45 90 39;
 
-    --success: 196 100% 14%;
-    --warning: 34 51% 25%;
-    --error: 10 39% 43%;
+    --success: 45 90 39;
+    --warning: 45 90 39;
+    --error: 220 38 38;
   }
 }
 
@@ -89,7 +102,105 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    @apply bg-neutral-50 text-foreground min-h-[100vh] flex flex-col;
+  }
+
+  /* Override Tailwind default link styles globally */
+  a:not([class*='bg-']):not([class*='text-white']) {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  a:not([class*='bg-']):not([class*='text-white']):hover {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  /* Styles spécifiques pour les liens Terra */
+  a.text-terra-green,
+  a.text-terra-green:hover {
+    color: #179a78 !important;
+  }
+
+  a.text-terra-green:hover {
+    opacity: 0.8;
+  }
+
+  /* Liens dans le contenu riche (prose) */
+  .prose a {
+    color: #179a78 !important;
+    text-decoration: underline !important;
+  }
+
+  .prose a:hover {
+    color: #179a78 !important;
+    opacity: 0.8;
+    text-decoration: underline !important;
+  }
+
+  /* Empêcher les boutons avec liens de devenir blancs */
+  button a,
+  .button a,
+  [role='button'] a {
+    color: inherit !important;
+  }
+
+  button a:hover,
+  .button a:hover,
+  [role='button'] a:hover {
+    color: inherit !important;
+  }
+}
+
+/* Prevent yellow flash during transitions */
+@layer components {
+  /* Force specific color values to avoid browser interpolation issues */
+  .bg-terra-green {
+    background-color: #2d5a27 !important;
+  }
+
+  .hover\:bg-terra-green\/90:hover {
+    background-color: #254a20 !important;
+  }
+
+  /* Ensure smooth transitions without color interpolation issues */
+  .transition-terra-safe {
+    transition-property: transform, box-shadow, opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+}
+
+/* CRITICAL FIX: Override all Tailwind hover text color changes */
+@layer utilities {
+  /* Reset all hover text color changes to inherit */
+  .hover\:text-accent-foreground:hover,
+  .hover\:text-white:hover,
+  .hover\:text-gray-900:hover,
+  .hover\:text-primary:hover,
+  .hover\:text-secondary:hover {
+    color: inherit !important;
+  }
+
+  /* Specifically target button variants that cause issues */
+  button.hover\:text-accent-foreground:hover,
+  button.hover\:text-white:hover,
+  [class*='hover:text-']:hover {
+    color: inherit !important;
+  }
+
+  /* Override any link inside button hover behavior */
+  button:hover a,
+  button a:hover,
+  .button:hover a,
+  .button a:hover {
+    color: inherit !important;
+  }
+
+  /* Ensure buttons with outline variant don't change link colors */
+  button[class*='outline']:hover,
+  button[class*='outline']:hover * {
+    color: inherit !important;
   }
 }
 

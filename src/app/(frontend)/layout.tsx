@@ -4,10 +4,11 @@ import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import React from 'react'
+import { Toaster } from 'sonner'
 
 import { AdminBar } from '@/components/AdminBar'
-import { Footer } from '@/Footer/Component'
-import { Header } from '@/Header/Component'
+import { TerraHeader } from '@/components/terra/TerraHeader'
+import { TerraFooter } from '@/components/terra/TerraFooter'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -26,17 +27,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
-      <body>
+      <body className="bg-neutral-50">
         <Providers>
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
+          <TerraHeader />
+          <main className="">{children}</main>
+          <TerraFooter />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#fff',
+                border: '1px solid #e5e7eb',
+                color: '#111827',
+              },
             }}
           />
-
-          <Header />
-          {children}
-          <Footer />
         </Providers>
       </body>
     </html>

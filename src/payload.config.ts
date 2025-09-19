@@ -11,16 +11,35 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
+import { Products } from './collections/Products'
+import { TerraCollections } from './collections/TerraCollections'
+import { Orders } from './collections/Orders'
+import { Customers } from './collections/Customers'
+import { Addresses } from './collections/Addresses'
+import { StockMovements } from './collections/StockMovements'
+import { StockAlerts } from './collections/StockAlerts'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import terraCompleteData from './endpoints/seed/terra-seed-complete'
+import terraSimpleSeed from './endpoints/seed/terra-seed-simple'
+import terraBasicSeed from './endpoints/seed/terra-basic'
+import terraMinimalSeed from './endpoints/seed/terra-minimal'
+import terraCollectionsSeed from './endpoints/seed/terra-collections-seed'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  endpoints: [
+    terraCompleteData,
+    terraSimpleSeed,
+    terraBasicSeed,
+    terraMinimalSeed,
+    terraCollectionsSeed,
+  ],
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -34,28 +53,34 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
-    livePreview: {
-      breakpoints: [
-        {
-          label: 'Mobile',
-          name: 'mobile',
-          width: 375,
-          height: 667,
-        },
-        {
-          label: 'Tablet',
-          name: 'tablet',
-          width: 768,
-          height: 1024,
-        },
-        {
-          label: 'Desktop',
-          name: 'desktop',
-          width: 1440,
-          height: 900,
-        },
-      ],
-    },
+    // Désactiver la live preview en développement pour réduire les rechargements
+    livePreview:
+      process.env.NODE_ENV === 'production'
+        ? {
+            breakpoints: [
+              {
+                label: 'Mobile',
+                name: 'mobile',
+                width: 375,
+                height: 667,
+              },
+              {
+                label: 'Tablet',
+                name: 'tablet',
+                width: 768,
+                height: 1024,
+              },
+              {
+                label: 'Desktop',
+                name: 'desktop',
+                width: 1440,
+                height: 900,
+              },
+            ],
+          }
+        : undefined,
+    // Optimisations pour le développement
+    autoLogin: false,
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
@@ -63,8 +88,22 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
+    migrationDir: './src/migrations',
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Products,
+    TerraCollections,
+    Orders,
+    Customers,
+    Addresses,
+    StockMovements,
+    StockAlerts,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [

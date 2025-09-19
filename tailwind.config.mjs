@@ -56,6 +56,14 @@ const config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        // TERRA Brand Colors
+        'terra-green': '#179A78',
+        'stone-white': '#F5F5F0',
+        'urban-black': '#1A1A1A',
+        'sage-green': '#9CAF88',
+        'terra-white': '#FFFFFF',
+
+        // Base system colors
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
@@ -96,6 +104,10 @@ const config = {
       fontFamily: {
         mono: ['var(--font-geist-mono)'],
         sans: ['var(--font-geist-sans)'],
+        // TERRA Typography
+        'terra-display': ['Inter', 'system-ui', 'sans-serif'], // Titres normaux
+        'terra-nectarine': ['Nectarine', 'Inter', 'system-ui', 'sans-serif'], // Gros titres uniquement
+        'terra-body': ['Source Sans Pro', 'system-ui', 'sans-serif'], // Texte courant
       },
       keyframes: {
         'accordion-down': {

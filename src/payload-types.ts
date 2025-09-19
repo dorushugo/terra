@@ -72,6 +72,13 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    products: Product;
+    'terra-collections': TerraCollection;
+    orders: Order;
+    customers: Customer;
+    addresses: Address;
+    'stock-movements': StockMovement;
+    'stock-alerts': StockAlert;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -88,6 +95,13 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    'terra-collections': TerraCollectionsSelect<false> | TerraCollectionsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    addresses: AddressesSelect<false> | AddressesSelect<true>;
+    'stock-movements': StockMovementsSelect<false> | StockMovementsSelect<true>;
+    'stock-alerts': StockAlertsSelect<false> | StockAlertsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -98,7 +112,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   globals: {
     header: Header;
@@ -146,7 +160,7 @@ export interface UserAuthOperations {
  * via the `definition` "pages".
  */
 export interface Page {
-  id: string;
+  id: number;
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -173,11 +187,11 @@ export interface Page {
             reference?:
               | ({
                   relationTo: 'pages';
-                  value: string | Page;
+                  value: number | Page;
                 } | null)
               | ({
                   relationTo: 'posts';
-                  value: string | Post;
+                  value: number | Post;
                 } | null);
             url?: string | null;
             label: string;
@@ -189,7 +203,7 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
-    media?: (string | null) | Media;
+    media?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -197,7 +211,7 @@ export interface Page {
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -212,9 +226,9 @@ export interface Page {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: string;
+  id: number;
   title: string;
-  heroImage?: (string | null) | Media;
+  heroImage?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -230,18 +244,18 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (string | Post)[] | null;
-  categories?: (string | Category)[] | null;
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (string | User)[] | null;
+  authors?: (number | User)[] | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -259,7 +273,7 @@ export interface Post {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt?: string | null;
   caption?: {
     root: {
@@ -351,14 +365,14 @@ export interface Media {
  * via the `definition` "categories".
  */
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   slug?: string | null;
   slugLock?: boolean | null;
-  parent?: (string | null) | Category;
+  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
-        doc?: (string | null) | Category;
+        doc?: (number | null) | Category;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -372,8 +386,50 @@ export interface Category {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
-  name?: string | null;
+  id: number;
+  /**
+   * Prénom de l'utilisateur
+   */
+  firstName: string;
+  /**
+   * Nom de famille de l'utilisateur
+   */
+  lastName: string;
+  /**
+   * Numéro de téléphone (optionnel)
+   */
+  phone?: string | null;
+  /**
+   * Date de naissance (optionnelle)
+   */
+  dateOfBirth?: string | null;
+  /**
+   * Photo de profil
+   */
+  avatar?: (number | null) | Media;
+  /**
+   * Préférences utilisateur
+   */
+  preferences?: {
+    /**
+     * Recevoir la newsletter TERRA
+     */
+    newsletter?: boolean | null;
+    /**
+     * Recevoir les notifications SMS
+     */
+    smsNotifications?: boolean | null;
+    /**
+     * Recevoir les notifications par email
+     */
+    emailNotifications?: boolean | null;
+    language?: ('fr' | 'en') | null;
+    currency?: ('EUR' | 'USD') | null;
+  };
+  /**
+   * Commandes de cet utilisateur
+   */
+  orders?: (number | Order)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -391,6 +447,341 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * Numéro de commande unique (auto-généré)
+   */
+  orderNumber: string;
+  status: 'pending' | 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  /**
+   * Utilisateur connecté (si applicable)
+   */
+  user?: (number | null) | User;
+  /**
+   * Informations du client
+   */
+  customer: {
+    /**
+     * Email du client
+     */
+    email: string;
+    firstName: string;
+    lastName: string;
+    /**
+     * Numéro de téléphone (optionnel)
+     */
+    phone?: string | null;
+  };
+  /**
+   * Articles commandés
+   */
+  items: {
+    /**
+     * Produit commandé
+     */
+    product: number | Product;
+    /**
+     * Quantité commandée
+     */
+    quantity: number;
+    size: '36' | '37' | '38' | '39' | '40' | '41' | '42' | '43' | '44' | '45' | '46';
+    /**
+     * Couleur choisie
+     */
+    color: string;
+    /**
+     * Prix unitaire au moment de la commande
+     */
+    unitPrice: number;
+    /**
+     * Prix total pour cet item (quantité × prix unitaire)
+     */
+    totalPrice: number;
+    id?: string | null;
+  }[];
+  /**
+   * Détails des prix
+   */
+  pricing: {
+    /**
+     * Sous-total (avant frais)
+     */
+    subtotal: number;
+    /**
+     * Frais de livraison
+     */
+    shippingCost?: number | null;
+    /**
+     * Montant des taxes (TVA)
+     */
+    taxAmount?: number | null;
+    /**
+     * Montant de la réduction
+     */
+    discountAmount?: number | null;
+    /**
+     * Total final
+     */
+    total: number;
+  };
+  /**
+   * Adresse de livraison
+   */
+  shippingAddress: {
+    /**
+     * Adresse (rue, numéro)
+     */
+    street: string;
+    city: string;
+    postalCode: string;
+    country: 'FR' | 'BE' | 'CH' | 'LU' | 'MC';
+  };
+  /**
+   * Informations de paiement
+   */
+  paymentInfo: {
+    method: 'card' | 'paypal' | 'apple_pay' | 'google_pay' | 'transfer';
+    status: 'pending' | 'paid' | 'failed' | 'refunded';
+    /**
+     * ID de transaction du processeur de paiement
+     */
+    transactionId?: string | null;
+    /**
+     * Date et heure du paiement
+     */
+    paidAt?: string | null;
+  };
+  /**
+   * Suivi de livraison
+   */
+  tracking?: {
+    carrier?: ('colissimo' | 'chronopost' | 'ups' | 'dhl' | 'fedex') | null;
+    /**
+     * Numéro de suivi du colis
+     */
+    trackingNumber?: string | null;
+    /**
+     * Date d'expédition
+     */
+    shippedAt?: string | null;
+    /**
+     * Date de livraison
+     */
+    deliveredAt?: string | null;
+  };
+  /**
+   * Notes internes sur la commande
+   */
+  notes?: string | null;
+  /**
+   * Commentaires du client
+   */
+  customerNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  /**
+   * Nom du produit (ex: TERRA Origin Stone White)
+   */
+  title: string;
+  /**
+   * URL du produit (auto-généré)
+   */
+  slug: string;
+  collection: 'origin' | 'move' | 'limited';
+  /**
+   * Prix en euros
+   */
+  price: number;
+  /**
+   * Description détaillée du produit
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Description courte pour les cartes produits
+   */
+  shortDescription: string;
+  /**
+   * Images du produit (6-8 angles recommandés)
+   */
+  images?:
+    | {
+        image: number | Media;
+        alt: string;
+        id?: string | null;
+      }[]
+    | null;
+  colors: {
+    /**
+     * Nom de la couleur (ex: Stone White)
+     */
+    name: string;
+    /**
+     * Code couleur hex (ex: #F5F5F0)
+     */
+    value: string;
+    /**
+     * Images spécifiques à cette couleur
+     */
+    images?:
+      | {
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  sizes: {
+    size: '36' | '37' | '38' | '39' | '40' | '41' | '42' | '43' | '44' | '45' | '46';
+    /**
+     * Quantité en stock
+     */
+    stock: number;
+    /**
+     * Stock réservé (commandes en attente)
+     */
+    reservedStock?: number | null;
+    /**
+     * Stock disponible (stock - réservé)
+     */
+    availableStock?: number | null;
+    /**
+     * Seuil d'alerte stock faible
+     */
+    lowStockThreshold?: number | null;
+    /**
+     * Stock faible (alerte)
+     */
+    isLowStock?: boolean | null;
+    /**
+     * Rupture de stock
+     */
+    isOutOfStock?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Score éco de 1 à 10
+   */
+  ecoScore: number;
+  /**
+   * Informations de durabilité
+   */
+  sustainability?: {
+    materials?:
+      | {
+          /**
+           * Nom du matériau (ex: Cuir Apple)
+           */
+          name: string;
+          /**
+           * Description du matériau
+           */
+          description: string;
+          /**
+           * Avantage écologique
+           */
+          sustainabilityBenefit: string;
+          /**
+           * Pourcentage dans le produit
+           */
+          percentage?: number | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Empreinte carbone en kg CO2
+     */
+    carbonFootprint?: number | null;
+    /**
+     * Pourcentage de matériaux recyclés
+     */
+    recycledContent?: number | null;
+  };
+  /**
+   * Caractéristiques du produit
+   */
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Instructions d'entretien
+   */
+  careInstructions?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Produit mis en avant
+   */
+  isFeatured?: boolean | null;
+  /**
+   * Nouvelle arrivée
+   */
+  isNewArrival?: boolean | null;
+  /**
+   * Historique des mouvements de stock
+   */
+  stockHistory?:
+    | {
+        date: string;
+        type: 'restock' | 'sale' | 'return' | 'adjustment' | 'reservation' | 'release';
+        size: string;
+        quantity: number;
+        /**
+         * Raison du mouvement
+         */
+        reason?: string | null;
+        /**
+         * Référence (numéro de commande, etc.)
+         */
+        reference?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -420,11 +811,11 @@ export interface CallToActionBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -470,11 +861,11 @@ export interface ContentBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -495,7 +886,7 @@ export interface ContentBlock {
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
-  media: string | Media;
+  media: number | Media;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -522,12 +913,12 @@ export interface ArchiveBlock {
   } | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
-  categories?: (string | Category)[] | null;
+  categories?: (number | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
     | {
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       }[]
     | null;
   id?: string | null;
@@ -539,7 +930,7 @@ export interface ArchiveBlock {
  * via the `definition` "FormBlock".
  */
 export interface FormBlock {
-  form: string | Form;
+  form: number | Form;
   enableIntro?: boolean | null;
   introContent?: {
     root: {
@@ -565,7 +956,7 @@ export interface FormBlock {
  * via the `definition` "forms".
  */
 export interface Form {
-  id: string;
+  id: number;
   title: string;
   fields?:
     | (
@@ -736,10 +1127,465 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terra-collections".
+ */
+export interface TerraCollection {
+  id: number;
+  /**
+   * Nom de la collection (ex: TERRA Origin)
+   */
+  name: string;
+  /**
+   * URL de la collection (ex: origin)
+   */
+  slug: string;
+  /**
+   * Slogan de la collection (ex: L'essentiel réinventé)
+   */
+  tagline: string;
+  /**
+   * Description détaillée de la collection
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Description courte pour les cartes
+   */
+  shortDescription: string;
+  priceRange: {
+    /**
+     * Prix minimum
+     */
+    from: number;
+    /**
+     * Prix maximum (optionnel)
+     */
+    to?: number | null;
+  };
+  /**
+   * Image principale de la collection
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * Image lifestyle de la collection
+   */
+  lifestyleImage?: (number | null) | Media;
+  /**
+   * Caractéristiques clés (3-5 max)
+   */
+  keyFeatures?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Matériaux utilisés dans la collection
+   */
+  materials?:
+    | {
+        /**
+         * Nom du matériau
+         */
+        name: string;
+        /**
+         * Description du matériau
+         */
+        description: string;
+        /**
+         * Avantage écologique
+         */
+        sustainabilityBenefit: string;
+        /**
+         * Image du matériau
+         */
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  craftsmanship?: {
+    title?: string | null;
+    /**
+     * Description du savoir-faire
+     */
+    description?: string | null;
+    /**
+     * Statistiques du savoir-faire
+     */
+    stats?:
+      | {
+          stat: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Image du processus de fabrication
+     */
+    image?: (number | null) | Media;
+  };
+  /**
+   * Guide de style pour la collection
+   */
+  stylingGuide?:
+    | {
+        /**
+         * Nom du look (ex: Casual Urbain)
+         */
+        lookName: string;
+        /**
+         * Description du style
+         */
+        description?: string | null;
+        /**
+         * Image du look
+         */
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Ordre d'affichage
+   */
+  order?: number | null;
+  /**
+   * Collection active
+   */
+  isActive?: boolean | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  /**
+   * Adresse email du client
+   */
+  email: string;
+  /**
+   * Prénom
+   */
+  firstName: string;
+  /**
+   * Nom de famille
+   */
+  lastName: string;
+  /**
+   * Numéro de téléphone
+   */
+  phone?: string | null;
+  /**
+   * Date de naissance (optionnel)
+   */
+  dateOfBirth?: string | null;
+  /**
+   * Adresses du client
+   */
+  addresses?:
+    | {
+        /**
+         * Label de l'adresse (ex: Domicile, Travail)
+         */
+        label: string;
+        /**
+         * Adresse (rue, numéro)
+         */
+        street: string;
+        city: string;
+        postalCode: string;
+        country: 'FR' | 'BE' | 'CH' | 'LU' | 'MC';
+        /**
+         * Adresse par défaut
+         */
+        isDefault?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Préférences du client
+   */
+  preferences?: {
+    /**
+     * Collections préférées
+     */
+    favoriteCollections?: ('origin' | 'move' | 'limited')[] | null;
+    /**
+     * Pointures habituelles
+     */
+    preferredSizes?: ('36' | '37' | '38' | '39' | '40' | '41' | '42' | '43' | '44' | '45' | '46')[] | null;
+    /**
+     * Abonné à la newsletter
+     */
+    newsletterSubscribed?: boolean | null;
+    /**
+     * Consent marketing (SMS, emails promotionnels)
+     */
+    marketingConsent?: boolean | null;
+  };
+  /**
+   * Statistiques client
+   */
+  stats?: {
+    /**
+     * Nombre total de commandes
+     */
+    totalOrders?: number | null;
+    /**
+     * Montant total dépensé
+     */
+    totalSpent?: number | null;
+    /**
+     * Panier moyen
+     */
+    averageOrderValue?: number | null;
+    /**
+     * Date de dernière commande
+     */
+    lastOrderDate?: string | null;
+  };
+  /**
+   * Niveau de fidélité basé sur le montant dépensé
+   */
+  customerTier?: ('bronze' | 'silver' | 'gold' | 'platinum') | null;
+  /**
+   * Notes internes sur le client
+   */
+  notes?: string | null;
+  /**
+   * Tags pour catégoriser le client
+   */
+  tags?: ('vip' | 'influencer' | 'press' | 'employee' | 'problematic' | 'eco_conscious')[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "addresses".
+ */
+export interface Address {
+  id: number;
+  /**
+   * Utilisateur propriétaire de cette adresse
+   */
+  user: number | User;
+  /**
+   * Type d'adresse
+   */
+  type: 'shipping' | 'billing';
+  /**
+   * Prénom du destinataire
+   */
+  firstName: string;
+  /**
+   * Nom du destinataire
+   */
+  lastName: string;
+  /**
+   * Nom de l'entreprise (optionnel)
+   */
+  company?: string | null;
+  /**
+   * Adresse principale (rue, numéro)
+   */
+  address1: string;
+  /**
+   * Complément d'adresse (appartement, étage, etc.)
+   */
+  address2?: string | null;
+  /**
+   * Ville
+   */
+  city: string;
+  /**
+   * Code postal
+   */
+  postalCode: string;
+  /**
+   * Pays
+   */
+  country: 'FR' | 'BE' | 'CH' | 'LU' | 'MC' | 'DE' | 'IT' | 'ES' | 'NL' | 'AT';
+  /**
+   * Numéro de téléphone (optionnel)
+   */
+  phone?: string | null;
+  /**
+   * Adresse par défaut pour ce type
+   */
+  isDefault?: boolean | null;
+  /**
+   * Nom personnalisé pour cette adresse (ex: "Maison", "Bureau")
+   */
+  label?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Suivi détaillé de tous les mouvements de stock
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-movements".
+ */
+export interface StockMovement {
+  id: number;
+  /**
+   * Référence unique du mouvement (auto-généré)
+   */
+  reference: string;
+  /**
+   * Date et heure du mouvement
+   */
+  date: string;
+  /**
+   * Type de mouvement de stock
+   */
+  type: 'restock' | 'sale' | 'return' | 'adjustment' | 'reservation' | 'release' | 'loss' | 'sample' | 'initial';
+  /**
+   * Produit concerné par le mouvement
+   */
+  product: number | Product;
+  /**
+   * Taille concernée
+   */
+  size: '36' | '37' | '38' | '39' | '40' | '41' | '42' | '43' | '44' | '45' | '46';
+  /**
+   * Quantité (positive pour entrée, négative pour sortie)
+   */
+  quantity: number;
+  /**
+   * Stock avant le mouvement
+   */
+  stockBefore: number;
+  /**
+   * Stock après le mouvement
+   */
+  stockAfter: number;
+  /**
+   * Raison du mouvement (obligatoire)
+   */
+  reason: string;
+  /**
+   * Référence de commande (si applicable)
+   */
+  orderReference?: string | null;
+  /**
+   * Référence fournisseur (pour réapprovisionnements)
+   */
+  supplierReference?: string | null;
+  /**
+   * Coût unitaire (pour réapprovisionnements)
+   */
+  unitCost?: number | null;
+  /**
+   * Coût total du mouvement
+   */
+  totalCost?: number | null;
+  /**
+   * Utilisateur ayant effectué le mouvement
+   */
+  user?: (number | null) | User;
+  /**
+   * Notes additionnelles
+   */
+  notes?: string | null;
+  /**
+   * Mouvement automatique (via commande)
+   */
+  isAutomated?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Alertes automatiques de gestion des stocks
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-alerts".
+ */
+export interface StockAlert {
+  id: number;
+  /**
+   * Référence unique de l'alerte
+   */
+  alertReference: string;
+  /**
+   * Type d'alerte
+   */
+  alertType: 'low_stock' | 'out_of_stock' | 'overstock' | 'restock_suggestion';
+  /**
+   * Priorité de l'alerte
+   */
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  /**
+   * Produit concerné
+   */
+  product: number | Product;
+  /**
+   * Taille concernée
+   */
+  size: '36' | '37' | '38' | '39' | '40' | '41' | '42' | '43' | '44' | '45' | '46';
+  /**
+   * Stock actuel
+   */
+  currentStock: number;
+  /**
+   * Seuil qui a déclenché l'alerte
+   */
+  threshold?: number | null;
+  /**
+   * Quantité suggérée pour réapprovisionnement
+   */
+  suggestedQuantity?: number | null;
+  /**
+   * Message d'alerte détaillé
+   */
+  message: string;
+  /**
+   * Alerte résolue
+   */
+  isResolved?: boolean | null;
+  /**
+   * Date de résolution
+   */
+  resolvedAt?: string | null;
+  /**
+   * Résolu par
+   */
+  resolvedBy?: (number | null) | User;
+  /**
+   * Notes de résolution
+   */
+  resolutionNotes?: string | null;
+  /**
+   * Action entreprise
+   */
+  actionTaken?:
+    | ('restocked' | 'discontinued' | 'threshold_adjusted' | 'false_alert' | 'waiting_supplier' | 'other')
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
-  id: string;
+  id: number;
   /**
    * You will need to rebuild the website when changing this field.
    */
@@ -749,11 +1595,11 @@ export interface Redirect {
     reference?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     url?: string | null;
   };
@@ -765,8 +1611,8 @@ export interface Redirect {
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
-  id: string;
-  form: string | Form;
+  id: number;
+  form: number | Form;
   submissionData?:
     | {
         field: string;
@@ -784,18 +1630,18 @@ export interface FormSubmission {
  * via the `definition` "search".
  */
 export interface Search {
-  id: string;
+  id: number;
   title?: string | null;
   priority?: number | null;
   doc: {
     relationTo: 'posts';
-    value: string | Post;
+    value: number | Post;
   };
   slug?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
   };
   categories?:
     | {
@@ -813,7 +1659,7 @@ export interface Search {
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
-  id: string;
+  id: number;
   /**
    * Input data provided to the job
    */
@@ -905,52 +1751,80 @@ export interface PayloadJob {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'pages';
-        value: string | Page;
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
         relationTo: 'categories';
-        value: string | Category;
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'terra-collections';
+        value: number | TerraCollection;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'customers';
+        value: number | Customer;
+      } | null)
+    | ({
+        relationTo: 'addresses';
+        value: number | Address;
+      } | null)
+    | ({
+        relationTo: 'stock-movements';
+        value: number | StockMovement;
+      } | null)
+    | ({
+        relationTo: 'stock-alerts';
+        value: number | StockAlert;
       } | null)
     | ({
         relationTo: 'redirects';
-        value: string | Redirect;
+        value: number | Redirect;
       } | null)
     | ({
         relationTo: 'forms';
-        value: string | Form;
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'form-submissions';
-        value: string | FormSubmission;
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'search';
-        value: string | Search;
+        value: number | Search;
       } | null)
     | ({
         relationTo: 'payload-jobs';
-        value: string | PayloadJob;
+        value: number | PayloadJob;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -960,10 +1834,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -983,7 +1857,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -1273,7 +2147,21 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  name?: T;
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
+  dateOfBirth?: T;
+  avatar?: T;
+  preferences?:
+    | T
+    | {
+        newsletter?: T;
+        smsNotifications?: T;
+        emailNotifications?: T;
+        language?: T;
+        currency?: T;
+      };
+  orders?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1290,6 +2178,326 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  collection?: T;
+  price?: T;
+  description?: T;
+  shortDescription?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        id?: T;
+      };
+  colors?:
+    | T
+    | {
+        name?: T;
+        value?: T;
+        images?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  sizes?:
+    | T
+    | {
+        size?: T;
+        stock?: T;
+        reservedStock?: T;
+        availableStock?: T;
+        lowStockThreshold?: T;
+        isLowStock?: T;
+        isOutOfStock?: T;
+        id?: T;
+      };
+  ecoScore?: T;
+  sustainability?:
+    | T
+    | {
+        materials?:
+          | T
+          | {
+              name?: T;
+              description?: T;
+              sustainabilityBenefit?: T;
+              percentage?: T;
+              id?: T;
+            };
+        carbonFootprint?: T;
+        recycledContent?: T;
+      };
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  careInstructions?: T;
+  isFeatured?: T;
+  isNewArrival?: T;
+  stockHistory?:
+    | T
+    | {
+        date?: T;
+        type?: T;
+        size?: T;
+        quantity?: T;
+        reason?: T;
+        reference?: T;
+        id?: T;
+      };
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terra-collections_select".
+ */
+export interface TerraCollectionsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  tagline?: T;
+  description?: T;
+  shortDescription?: T;
+  priceRange?:
+    | T
+    | {
+        from?: T;
+        to?: T;
+      };
+  heroImage?: T;
+  lifestyleImage?: T;
+  keyFeatures?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  materials?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+        sustainabilityBenefit?: T;
+        image?: T;
+        id?: T;
+      };
+  craftsmanship?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        stats?:
+          | T
+          | {
+              stat?: T;
+              id?: T;
+            };
+        image?: T;
+      };
+  stylingGuide?:
+    | T
+    | {
+        lookName?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  order?: T;
+  isActive?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  orderNumber?: T;
+  status?: T;
+  user?: T;
+  customer?:
+    | T
+    | {
+        email?: T;
+        firstName?: T;
+        lastName?: T;
+        phone?: T;
+      };
+  items?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        size?: T;
+        color?: T;
+        unitPrice?: T;
+        totalPrice?: T;
+        id?: T;
+      };
+  pricing?:
+    | T
+    | {
+        subtotal?: T;
+        shippingCost?: T;
+        taxAmount?: T;
+        discountAmount?: T;
+        total?: T;
+      };
+  shippingAddress?:
+    | T
+    | {
+        street?: T;
+        city?: T;
+        postalCode?: T;
+        country?: T;
+      };
+  paymentInfo?:
+    | T
+    | {
+        method?: T;
+        status?: T;
+        transactionId?: T;
+        paidAt?: T;
+      };
+  tracking?:
+    | T
+    | {
+        carrier?: T;
+        trackingNumber?: T;
+        shippedAt?: T;
+        deliveredAt?: T;
+      };
+  notes?: T;
+  customerNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
+  dateOfBirth?: T;
+  addresses?:
+    | T
+    | {
+        label?: T;
+        street?: T;
+        city?: T;
+        postalCode?: T;
+        country?: T;
+        isDefault?: T;
+        id?: T;
+      };
+  preferences?:
+    | T
+    | {
+        favoriteCollections?: T;
+        preferredSizes?: T;
+        newsletterSubscribed?: T;
+        marketingConsent?: T;
+      };
+  stats?:
+    | T
+    | {
+        totalOrders?: T;
+        totalSpent?: T;
+        averageOrderValue?: T;
+        lastOrderDate?: T;
+      };
+  customerTier?: T;
+  notes?: T;
+  tags?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "addresses_select".
+ */
+export interface AddressesSelect<T extends boolean = true> {
+  user?: T;
+  type?: T;
+  firstName?: T;
+  lastName?: T;
+  company?: T;
+  address1?: T;
+  address2?: T;
+  city?: T;
+  postalCode?: T;
+  country?: T;
+  phone?: T;
+  isDefault?: T;
+  label?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-movements_select".
+ */
+export interface StockMovementsSelect<T extends boolean = true> {
+  reference?: T;
+  date?: T;
+  type?: T;
+  product?: T;
+  size?: T;
+  quantity?: T;
+  stockBefore?: T;
+  stockAfter?: T;
+  reason?: T;
+  orderReference?: T;
+  supplierReference?: T;
+  unitCost?: T;
+  totalCost?: T;
+  user?: T;
+  notes?: T;
+  isAutomated?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-alerts_select".
+ */
+export interface StockAlertsSelect<T extends boolean = true> {
+  alertReference?: T;
+  alertType?: T;
+  priority?: T;
+  product?: T;
+  size?: T;
+  currentStock?: T;
+  threshold?: T;
+  suggestedQuantity?: T;
+  message?: T;
+  isResolved?: T;
+  resolvedAt?: T;
+  resolvedBy?: T;
+  resolutionNotes?: T;
+  actionTaken?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1551,7 +2759,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "header".
  */
 export interface Header {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1560,11 +2768,11 @@ export interface Header {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -1580,7 +2788,7 @@ export interface Header {
  * via the `definition` "footer".
  */
 export interface Footer {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1589,11 +2797,11 @@ export interface Footer {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -1661,14 +2869,14 @@ export interface TaskSchedulePublish {
     doc?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: (number | null) | User;
   };
   output?: unknown;
 }

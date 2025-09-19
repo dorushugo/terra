@@ -27,10 +27,21 @@ const nextConfig = {
       '.mjs': ['.mts', '.mjs'],
     }
 
+    // Optimisation pour réduire les rechargements
+    webpackConfig.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+      ignored: ['**/node_modules', '**/.next', '**/migrations'],
+    }
+
     return webpackConfig
   },
   reactStrictMode: true,
   redirects,
+  // Optimisations pour le développement
+  experimental: {
+    optimizePackageImports: ['@payloadcms/ui', '@payloadcms/richtext-lexical'],
+  },
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })

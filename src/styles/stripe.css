@@ -1,0 +1,80 @@
+/* Styles pour forcer le contraste des éléments Stripe - VERSION AGRESSIVE */
+
+/* Forcer tous les éléments Stripe à être visibles */
+.__PrivateStripeElement,
+.__PrivateStripeElement > *,
+.StripeElement,
+.StripeElement > *,
+[data-testid*='stripe'],
+iframe[name*='__privateStripeFrame'] {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Container principal */
+.stripe-payment-element {
+  background-color: #ffffff !important;
+  border: 3px solid #000000 !important;
+  border-radius: 8px !important;
+  padding: 20px !important;
+  min-height: 200px !important;
+}
+
+/* Tous les inputs et éléments de texte */
+.stripe-payment-element input,
+.stripe-payment-element textarea,
+.stripe-payment-element select,
+.stripe-payment-element [role='textbox'],
+.stripe-payment-element [contenteditable] {
+  background-color: white !important;
+  color: black !important;
+  border: 2px solid #333333 !important;
+  padding: 12px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+}
+
+/* Placeholders */
+.stripe-payment-element input::placeholder,
+.stripe-payment-element textarea::placeholder {
+  color: #666666 !important;
+  opacity: 1 !important;
+}
+
+/* Labels et textes */
+.stripe-payment-element label,
+.stripe-payment-element .Label,
+.stripe-payment-element span,
+.stripe-payment-element div {
+  color: black !important;
+  font-weight: 500 !important;
+}
+
+/* Tabs */
+.stripe-payment-element [role='tab'],
+.stripe-payment-element .Tab {
+  background-color: #f0f0f0 !important;
+  color: black !important;
+  border: 2px solid #cccccc !important;
+  padding: 10px 15px !important;
+}
+
+.stripe-payment-element [role='tab'][aria-selected='true'],
+.stripe-payment-element .Tab--selected {
+  background-color: white !important;
+  color: #16a34a !important;
+  border-color: #16a34a !important;
+  font-weight: bold !important;
+}
+
+/* Messages d'erreur */
+.stripe-payment-element .Error,
+.stripe-payment-element [role='alert'] {
+  color: #dc2626 !important;
+  background-color: #fee2e2 !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+/* Styles ciblés uniquement pour Stripe Elements */
