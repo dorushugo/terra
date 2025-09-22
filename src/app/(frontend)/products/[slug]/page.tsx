@@ -38,7 +38,7 @@ export default async function ProductPage({ params: paramsPromise }: Args) {
   const relatedProducts = await payload.find({
     collection: 'products',
     depth: 2,
-    limit: 4,
+    limit: 9,
     where: {
       and: [
         {
@@ -55,7 +55,13 @@ export default async function ProductPage({ params: paramsPromise }: Args) {
     },
   })
 
-  return <ProductPageClient product={product} relatedProducts={relatedProducts.docs as Product[]} />
+  return (
+    <ProductPageClient
+      product={product}
+      relatedProducts={relatedProducts.docs as Product[]}
+      totalRelatedProducts={relatedProducts.totalDocs}
+    />
+  )
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
@@ -83,7 +89,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   return {
     title: `${product.title} - TERRA`,
-    description: product.shortDescription || product.description,
+    description:
+      product.shortDescription ||
+      (typeof product.description === 'string' ? product.description : undefined),
     openGraph: {
       title: `${product.title} - TERRA`,
       description: product.shortDescription,

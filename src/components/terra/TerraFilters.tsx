@@ -217,7 +217,7 @@ export const TerraFilters: React.FC<TerraFiltersProps> = ({
                 onValueChange={(value) =>
                   onFiltersChange({ ...filters, priceRange: value as [number, number] })
                 }
-                max={300}
+                max={700}
                 min={50}
                 step={10}
                 className="w-full"

@@ -20,9 +20,15 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "test": "pnpm run test:int && pnpm run test:e2e",
+    "test": "pnpm run test:unit && pnpm run test:int && pnpm run test:e2e",
+    "test:all": "chmod +x ./scripts/run-all-tests.sh && ./scripts/run-all-tests.sh",
+    "test:watch": "chmod +x ./scripts/test-watch.sh && ./scripts/test-watch.sh",
+    "test:unit": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts tests/unit",
+    "test:unit:watch": "cross-env NODE_OPTIONS=--no-deprecation vitest --config ./vitest.config.mts tests/unit",
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts tests/integration",
+    "test:int:watch": "cross-env NODE_OPTIONS=--no-deprecation vitest --config ./vitest.config.mts tests/integration",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test --config=playwright.config.ts",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
+    "test:coverage": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts --coverage"
   },
   "dependencies": {
     "@payloadcms/admin-bar": "3.55.1",

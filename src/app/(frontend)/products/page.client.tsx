@@ -38,7 +38,7 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
 
   const [filters, setFilters] = useState({
     collections: [] as string[],
-    priceRange: [50, 300] as [number, number],
+    priceRange: [50, 700] as [number, number],
     colors: [] as string[],
     sizes: [] as string[],
     ecoScore: [1, 10] as [number, number],

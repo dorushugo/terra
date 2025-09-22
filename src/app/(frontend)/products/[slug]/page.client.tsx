@@ -7,7 +7,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TerraEcoScore } from '@/components/terra/TerraEcoScore'
-import { TerraProductCard } from '@/components/terra/TerraProductCard'
+import { LoadMoreRelatedProducts } from '@/components/terra/LoadMoreRelatedProducts'
 import { FavoriteButton } from '@/components/terra/favorites/FavoriteButton'
 import { ViewTransition } from '@/components/ui/ViewTransition'
 import {
@@ -36,11 +36,13 @@ import {
 interface ProductPageClientProps {
   product: Product
   relatedProducts: Product[]
+  totalRelatedProducts?: number
 }
 
 export const ProductPageClient: React.FC<ProductPageClientProps> = ({
   product,
   relatedProducts,
+  totalRelatedProducts,
 }) => {
   const [selectedColorIndex, setSelectedColorIndex] = useState(0)
   const [selectedSizeIndex, setSelectedSizeIndex] = useState<number | null>(null)
@@ -442,11 +444,11 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
                 Vous pourriez aussi aimer
               </h2>
             </MotionFadeIn>
-            <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((relatedProduct) => (
-                <TerraProductCard key={relatedProduct.id} product={relatedProduct} />
-              ))}
-            </MotionGrid>
+            <LoadMoreRelatedProducts
+              initialProducts={relatedProducts}
+              currentProduct={product}
+              totalProducts={totalRelatedProducts}
+            />
           </motion.section>
         )}
       </div>
