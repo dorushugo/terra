@@ -352,7 +352,7 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Contact spécialisés */}
+          {/* Contact specialises */}
           <div className="bg-gray-50 rounded-lg p-8">
             <h3 className="text-xl font-terra-display font-bold text-urban-black mb-6 text-center">
               Contacts spécialisés
