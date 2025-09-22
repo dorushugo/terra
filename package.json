@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "build:vercel": "./scripts/build-vercel.sh",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DROP_DATABASE=false next dev",
     "dev:stable": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DROP_DATABASE=false PAYLOAD_DISABLE_ADMIN_HOT_RELOAD=true next dev --turbo",
