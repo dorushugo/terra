@@ -96,11 +96,7 @@ export const TerraFooter: React.FC = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-3 mb-6">
-              <img
-                src="/Terra_logo.svg"
-                alt="TERRA Logo"
-                className="h-12 w-auto"
-              />
+              <img src="/Terra_logo.svg" alt="TERRA Logo" className="h-12 w-auto" />
             </Link>
 
             <p className="font-terra-body text-gray-300 mb-6 leading-relaxed">

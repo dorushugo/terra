@@ -164,41 +164,41 @@ export const TerraHeader: React.FC = () => {
                     {/* Dropdown avec zone de transition invisible */}
                     <AnimatePresence>
                       {isCollectionsOpen && (
-                        <div 
+                        <div
                           className="absolute top-full left-0 pt-2 z-50"
                           onMouseEnter={handleCollectionsMouseEnter}
                           onMouseLeave={handleCollectionsMouseLeave}
                         >
                           {/* Zone invisible pour faciliter la transition */}
                           <div className="absolute top-0 left-0 right-0 h-2 bg-transparent" />
-                          <motion.div 
+                          <motion.div
                             className="w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2"
                             initial={{ opacity: 0, y: -10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                            transition={{ 
-                              duration: 0.2, 
-                              ease: [0.16, 1, 0.3, 1] as any 
+                            transition={{
+                              duration: 0.2,
+                              ease: [0.16, 1, 0.3, 1] as any,
                             }}
                           >
-                        {item.dropdownItems?.map((dropdownItem) => (
-                          <Link
-                            key={dropdownItem.name}
-                            href={dropdownItem.href}
-                            className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors group"
-                          >
-                            <div>
-                              <div className="font-terra-body font-medium text-urban-black group-hover:text-terra-green">
-                                {dropdownItem.name}
-                              </div>
-                              {dropdownItem.badge && (
-                                <div className="text-xs text-gray-500 mt-1">
-                                  {dropdownItem.badge}
+                            {item.dropdownItems?.map((dropdownItem) => (
+                              <Link
+                                key={dropdownItem.name}
+                                href={dropdownItem.href}
+                                className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors group"
+                              >
+                                <div>
+                                  <div className="font-terra-body font-medium text-urban-black group-hover:text-terra-green">
+                                    {dropdownItem.name}
+                                  </div>
+                                  {dropdownItem.badge && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                      {dropdownItem.badge}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          </Link>
-                        ))}
+                              </Link>
+                            ))}
                           </motion.div>
                         </div>
                       )}
