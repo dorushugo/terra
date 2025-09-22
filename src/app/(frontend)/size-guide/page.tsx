@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import React from 'react'
-import { Ruler, Footprints, Info, CheckCircle, AlertCircle } from 'lucide-react'
+import { Ruler, User, Info, CheckCircle, AlertCircle } from 'lucide-react'
 
 export default function SizeGuidePage() {
   const sizeChart = [
@@ -38,7 +38,7 @@ export default function SizeGuidePage() {
         {/* Guide rapide */}
         <div className="bg-terra-green/5 border border-terra-green/20 rounded-lg p-8 mb-12">
           <h2 className="text-xl font-terra-display font-bold text-urban-black mb-6 flex items-center">
-            <Footprints className="h-5 w-5 text-terra-green mr-2" />
+            <User className="h-5 w-5 text-terra-green mr-2" />
             Comment mesurer votre pied ?
           </h2>
 
