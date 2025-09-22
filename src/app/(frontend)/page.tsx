@@ -4,6 +4,12 @@ import { TerraHero } from '@/components/terra/TerraHero'
 import { CollectionsShowcase } from '@/components/terra/CollectionsShowcase'
 import { SustainabilityStrip } from '@/components/terra/SustainabilityStrip'
 import { TerraProductCard } from '@/components/terra/TerraProductCard'
+import {
+  PageTransition,
+  RevealOnScroll,
+  AnimatedSection,
+  ProductGrid,
+} from '@/components/ui/PageTransition'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import configPromise from '@payload-config'
@@ -129,41 +135,41 @@ export default async function Page() {
 
   return (
     <React.Fragment>
-      <TerraHero
-        title="Sneakers. Grounded in Purpose."
-        subtitle="Style urbain, conscience environnementale"
-        image="/images/hero.png"
-        cta="Découvrir nos collections"
-      />
+      <PageTransition animation="hero">
+        <TerraHero
+          title="Sneakers. Grounded in Purpose."
+          subtitle="Style urbain, conscience environnementale"
+          image="/images/hero.png"
+          cta="Découvrir nos collections"
+        />
+      </PageTransition>
 
-      <CollectionsShowcase
-        title="Trois collections pensées pour ton style de vie"
-        collections={collectionsData}
-      />
+      <RevealOnScroll>
+        <CollectionsShowcase
+          title="Trois collections pensées pour ton style de vie"
+          collections={collectionsData}
+        />
+      </RevealOnScroll>
 
-      <SustainabilityStrip stats={sustainabilityStats} />
+      <RevealOnScroll>
+        <SustainabilityStrip stats={sustainabilityStats} />
+      </RevealOnScroll>
 
       {/* Featured Products Section */}
       {featuredProducts.docs.length > 0 && (
-        <section className="py-20">
+        <AnimatedSection
+          className="py-20"
+          title="Nos coups de cœur"
+          subtitle="Découvrez notre sélection de sneakers écoresponsables, pensées pour allier style et conscience environnementale."
+        >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-terra-display font-bold text-urban-black mb-6">
-                Nos coups de cœur
-              </h2>
-              <p className="text-lg font-terra-body text-gray-600 leading-relaxed">
-                Découvrez notre sélection de sneakers écoresponsables, pensées pour allier style et
-                conscience environnementale.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <ProductGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredProducts.docs.map((product) => (
                 <TerraProductCard key={product.id} product={product as Product} />
               ))}
-            </div>
+            </ProductGrid>
           </div>
-        </section>
+        </AnimatedSection>
       )}
 
       {/* Newsletter Section }

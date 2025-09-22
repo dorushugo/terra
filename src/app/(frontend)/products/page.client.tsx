@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TerraProductCard } from '@/components/terra/TerraProductCard'
 import { TerraFilters } from '@/components/terra/TerraFilters'
+import { PageTransition, ProductGrid } from '@/components/ui/PageTransition'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -110,7 +111,7 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
 
     if (filters.inStock) {
       filtered = filtered.filter((product) =>
-        product.sizes?.some((size) => size.availableStock > 0),
+        product.sizes?.some((size) => (size.availableStock || 0) > 0),
       )
     }
 
@@ -150,58 +151,62 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-16">
+    <PageTransition animation="page" className="min-h-screen bg-white pt-16">
       {/* Header */}
       <section className="bg-white border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-terra-display font-bold text-urban-black mb-2">
-                {getPageTitle()}
-              </h1>
-              <p className="text-gray-600 font-terra-body">{getPageDescription()}</p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 font-terra-body">
-                {filteredAndSortedProducts.length} produit
-                {filteredAndSortedProducts.length > 1 ? 's' : ''}
-              </span>
-
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Trier par" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Nouveautés</SelectItem>
-                  <SelectItem value="price-asc">Prix croissant</SelectItem>
-                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                  <SelectItem value="eco-score">Éco-score</SelectItem>
-                  <SelectItem value="name">Nom A-Z</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="flex border rounded-lg">
-                <Button
-                  variant={viewMode === 'grid' ? 'terra' : 'ghost'}
-                  size="sm"
-                  className={`border-r ${viewMode === 'grid' ? 'bg-terra-green hover:bg-terra-green/90 text-white' : ''}`}
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'terra' : 'ghost'}
-                  size="sm"
-                  className={
-                    viewMode === 'list' ? 'bg-terra-green hover:bg-terra-green/90 text-white' : ''
-                  }
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
+            <PageTransition animation="text" delay={100}>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-terra-display font-bold text-urban-black mb-2">
+                  {getPageTitle()}
+                </h1>
+                <p className="text-gray-600 font-terra-body">{getPageDescription()}</p>
               </div>
-            </div>
+            </PageTransition>
+
+            <PageTransition animation="content" delay={200}>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600 font-terra-body">
+                  {filteredAndSortedProducts.length} produit
+                  {filteredAndSortedProducts.length > 1 ? 's' : ''}
+                </span>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Nouveautés</SelectItem>
+                    <SelectItem value="price-asc">Prix croissant</SelectItem>
+                    <SelectItem value="price-desc">Prix décroissant</SelectItem>
+                    <SelectItem value="eco-score">Éco-score</SelectItem>
+                    <SelectItem value="name">Nom A-Z</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <div className="flex border rounded-lg">
+                  <Button
+                    variant={viewMode === 'grid' ? 'terra' : 'ghost'}
+                    size="sm"
+                    className={`border-r ${viewMode === 'grid' ? 'bg-terra-green hover:bg-terra-green/90 text-white' : ''}`}
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'terra' : 'ghost'}
+                    size="sm"
+                    className={
+                      viewMode === 'list' ? 'bg-terra-green hover:bg-terra-green/90 text-white' : ''
+                    }
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </PageTransition>
           </div>
         </div>
       </section>
@@ -248,22 +253,29 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
                   Réinitialiser les filtres
                 </Button>
               </div>
-            ) : (
-              <div
-                className={
-                  viewMode === 'grid'
-                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
-                    : 'space-y-4'
-                }
-              >
+            ) : viewMode === 'grid' ? (
+              <ProductGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredAndSortedProducts.map((product) => (
                   <TerraProductCard key={product.id} product={product} viewMode={viewMode} />
                 ))}
-              </div>
+              </ProductGrid>
+            ) : (
+              <PageTransition animation="content" delay={300}>
+                <div className="space-y-4">
+                  {filteredAndSortedProducts.map((product, index) => (
+                    <div
+                      key={product.id}
+                      className={`grid-enter grid-stagger-${Math.min(index + 1, 6)}`}
+                    >
+                      <TerraProductCard product={product} viewMode={viewMode} />
+                    </div>
+                  ))}
+                </div>
+              </PageTransition>
             )}
           </main>
         </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }

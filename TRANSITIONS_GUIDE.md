@@ -181,9 +181,113 @@ Le prefetching s'adapte à la connexion et aux préférences utilisateur :
 - Respect des préférences de données
 - Délais intelligents pour éviter la surcharge
 
+## 🎨 Animations d'Entrée de Page
+
+### Types d'Animations
+
+- **page-enter** : Animation générale pour toute la page (800ms)
+- **hero-enter** : Animation spéciale pour les sections hero (1000ms)
+- **content-enter** : Animation pour le contenu standard (600ms)
+- **card-enter** : Animation pour les cartes (500ms)
+- **text-reveal** : Animation subtile pour les textes (800ms)
+- **grid-enter** : Animation pour les éléments de grille (600ms)
+
+### Effets d'Échelonnement (Stagger)
+
+```css
+.stagger-1 {
+  animation-delay: 100ms;
+}
+.stagger-2 {
+  animation-delay: 200ms;
+}
+.stagger-3 {
+  animation-delay: 300ms;
+}
+/* ... jusqu'à stagger-6 */
+
+.grid-stagger-1 {
+  animation-delay: 50ms;
+}
+.grid-stagger-2 {
+  animation-delay: 100ms;
+}
+/* ... optimisé pour les grilles */
+```
+
+### Composants d'Animation
+
+#### PageTransition
+
+```tsx
+<PageTransition animation="hero" delay={200}>
+  <MyHeroSection />
+</PageTransition>
+```
+
+#### RevealOnScroll
+
+```tsx
+<RevealOnScroll threshold={0.2} delay={100}>
+  <MyContent />
+</RevealOnScroll>
+```
+
+#### AnimatedSection
+
+```tsx
+<AnimatedSection title="Mon Titre" subtitle="Ma Description" className="py-20">
+  <MyContent />
+</AnimatedSection>
+```
+
+#### ProductGrid
+
+```tsx
+<ProductGrid className="grid grid-cols-3 gap-6" staggerDelay={100}>
+  {products.map((product) => (
+    <ProductCard key={product.id} />
+  ))}
+</ProductGrid>
+```
+
+### Hooks Personnalisés
+
+#### useRevealOnScroll
+
+```tsx
+const elementRef = useRevealOnScroll({
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px',
+  triggerOnce: true,
+  delay: 200,
+})
+
+return (
+  <div ref={elementRef} className="reveal-on-scroll">
+    ...
+  </div>
+)
+```
+
+#### useStaggerReveal
+
+```tsx
+const containerRef = useStaggerReveal(itemCount, 100)
+
+return (
+  <div ref={containerRef}>
+    {items.map((item) => (
+      <div className="reveal-on-scroll">{item}</div>
+    ))}
+  </div>
+)
+```
+
 ## 🎯 Prochaines Étapes
 
 1. **Analytics** : Mesurer l'impact sur les métriques de performance
 2. **A/B Testing** : Tester différentes durées de transition
 3. **Animations avancées** : Ajouter plus d'animations contextuelles
 4. **Optimisations mobiles** : Adapter les transitions pour mobile
+5. **Micro-interactions** : Ajouter des animations sur les boutons et formulaires

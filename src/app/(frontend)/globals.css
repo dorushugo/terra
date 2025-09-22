@@ -299,4 +299,155 @@ html[data-theme='light'] {
     transform: translateY(-4px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   }
+
+  /* Animations d'entrée de page modernes */
+  .page-enter {
+    animation: pageEnter 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  .hero-enter {
+    animation: heroEnter 1000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(32px) scale(0.98);
+  }
+
+  .content-enter {
+    animation: contentEnter 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .card-enter {
+    animation: cardEnter 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  .stagger-1 {
+    animation-delay: 100ms;
+  }
+  .stagger-2 {
+    animation-delay: 200ms;
+  }
+  .stagger-3 {
+    animation-delay: 300ms;
+  }
+  .stagger-4 {
+    animation-delay: 400ms;
+  }
+  .stagger-5 {
+    animation-delay: 500ms;
+  }
+  .stagger-6 {
+    animation-delay: 600ms;
+  }
+
+  /* Animations pour les grilles de produits */
+  .grid-enter {
+    animation: gridEnter 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .grid-stagger-1 {
+    animation-delay: 50ms;
+  }
+  .grid-stagger-2 {
+    animation-delay: 100ms;
+  }
+  .grid-stagger-3 {
+    animation-delay: 150ms;
+  }
+  .grid-stagger-4 {
+    animation-delay: 200ms;
+  }
+  .grid-stagger-5 {
+    animation-delay: 250ms;
+  }
+  .grid-stagger-6 {
+    animation-delay: 300ms;
+  }
+
+  @keyframes pageEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes heroEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes contentEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes cardEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes gridEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Animation pour les éléments qui apparaissent au scroll */
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: all 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Animation subtile pour les textes */
+  .text-reveal {
+    animation: textReveal 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  @keyframes textReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Préférences de mouvement réduit */
+  @media (prefers-reduced-motion: reduce) {
+    .page-enter,
+    .hero-enter,
+    .content-enter,
+    .card-enter,
+    .grid-enter,
+    .text-reveal {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .reveal-on-scroll {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }

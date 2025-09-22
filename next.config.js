@@ -54,8 +54,6 @@ const nextConfig = {
   // Optimisations pour le développement
   experimental: {
     optimizePackageImports: ['@payloadcms/ui', '@payloadcms/richtext-lexical'],
-    // Optimiser les transitions de pages
-    optimizeCss: true,
     // Améliorer le prefetching
     scrollRestoration: true,
   },
