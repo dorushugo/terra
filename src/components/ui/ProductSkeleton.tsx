@@ -14,12 +14,12 @@ export const ProductSkeleton: React.FC<ProductSkeletonProps> = ({ count = 1, cla
           <div className="relative aspect-square overflow-hidden bg-gray-100">
             {/* Image skeleton */}
             <div className="absolute inset-0 loading-skeleton rounded-t-lg" />
-            
+
             {/* Badge skeleton */}
             <div className="absolute top-3 left-3 z-10">
               <div className="loading-skeleton h-6 w-16 rounded-full" />
             </div>
-            
+
             {/* Favorite button skeleton */}
             <div className="absolute top-3 right-3 z-10">
               <div className="loading-skeleton h-8 w-8 rounded-full" />

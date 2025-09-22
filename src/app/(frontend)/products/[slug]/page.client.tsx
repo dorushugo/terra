@@ -132,7 +132,10 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
               {product.images?.[selectedImageIndex] &&
                 typeof product.images[selectedImageIndex].image === 'object' && (
                   <Image
-                    src={getMediaUrl(product.images[selectedImageIndex].image.url, product.images[selectedImageIndex].image.updatedAt)}
+                    src={getMediaUrl(
+                      product.images[selectedImageIndex].image.url,
+                      product.images[selectedImageIndex].image.updatedAt,
+                    )}
                     alt={product.images[selectedImageIndex].alt || product.title}
                     fill
                     className="object-contain p-6 transition-terra-smooth"

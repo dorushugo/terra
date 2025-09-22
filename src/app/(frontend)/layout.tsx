@@ -9,6 +9,7 @@ import { Toaster } from 'sonner'
 import { AdminBar } from '@/components/AdminBar'
 import { TerraHeader } from '@/components/terra/TerraHeader'
 import { TerraFooter } from '@/components/terra/TerraFooter'
+import { ProgressBar } from '@/components/ui/LoadingTransition'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="bg-neutral-50">
         <Providers>
+          <ProgressBar />
           <TerraHeader />
           <main className="">{children}</main>
           <TerraFooter />

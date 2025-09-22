@@ -15,12 +15,7 @@ export function useOptimizedNavigation() {
 
   const navigate = useCallback(
     (href: string, options: NavigationOptions = {}) => {
-      const {
-        prefetch = true,
-        replace = false,
-        scroll = true,
-        transition = true,
-      } = options
+      const { prefetch = true, replace = false, scroll = true, transition = true } = options
 
       // Prefetch la route si demandé
       if (prefetch && typeof window !== 'undefined') {
@@ -36,11 +31,7 @@ export function useOptimizedNavigation() {
       }
 
       // Utiliser View Transitions si supporté et demandé
-      if (
-        transition &&
-        typeof window !== 'undefined' &&
-        'startViewTransition' in document
-      ) {
+      if (transition && typeof window !== 'undefined' && 'startViewTransition' in document) {
         ;(document as any).startViewTransition(() => {
           startTransition(() => {
             performNavigation()
@@ -53,7 +44,7 @@ export function useOptimizedNavigation() {
         })
       }
     },
-    [router]
+    [router],
   )
 
   // Prefetch intelligent basé sur l'interaction utilisateur
@@ -68,7 +59,7 @@ export function useOptimizedNavigation() {
         return () => clearTimeout(timeoutId)
       }
     },
-    [router]
+    [router],
   )
 
   // Prefetch basé sur l'intersection observer (quand l'élément est visible)
@@ -87,14 +78,14 @@ export function useOptimizedNavigation() {
         },
         {
           rootMargin: '50px', // Prefetch quand l'élément est à 50px d'être visible
-        }
+        },
       )
 
       observer.observe(element)
 
       return () => observer.disconnect()
     },
-    [router]
+    [router],
   )
 
   return {

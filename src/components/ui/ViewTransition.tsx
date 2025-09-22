@@ -13,16 +13,20 @@ interface ViewTransitionProps {
   prefetchOnView?: boolean
 }
 
-export function ViewTransition({ 
-  href, 
-  children, 
-  className, 
+export function ViewTransition({
+  href,
+  children,
+  className,
   onClick,
   prefetch = true,
   prefetchOnHover = true,
-  prefetchOnView = true
+  prefetchOnView = true,
 }: ViewTransitionProps) {
-  const { navigate, prefetchOnHover: prefetchOnHoverFn, prefetchOnView: prefetchOnViewFn } = useOptimizedNavigation()
+  const {
+    navigate,
+    prefetchOnHover: prefetchOnHoverFn,
+    prefetchOnView: prefetchOnViewFn,
+  } = useOptimizedNavigation()
   const linkRef = useRef<HTMLAnchorElement>(null)
 
   // Prefetch au survol si activé
@@ -41,7 +45,7 @@ export function ViewTransition({
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    
+
     // Si onClick personnalisé est fourni, l'exécuter
     if (onClick) {
       onClick(e)
@@ -52,10 +56,10 @@ export function ViewTransition({
   }
 
   return (
-    <a 
+    <a
       ref={linkRef}
-      href={href} 
-      onClick={handleClick} 
+      href={href}
+      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       className={className}
     >

@@ -76,6 +76,17 @@ export const Products: CollectionConfig = {
       admin: {
         description: 'Description détaillée du produit',
       },
+      validate: (val) => {
+        // Allow empty values
+        if (!val) return true
+        // Allow valid Lexical objects
+        if (typeof val === 'object' && val.root) return true
+        // Reject string values to prevent Lexical errors
+        if (typeof val === 'string') {
+          return 'Les descriptions texte doivent être converties. Veuillez resaisir le contenu.'
+        }
+        return true
+      },
     },
     {
       name: 'shortDescription',

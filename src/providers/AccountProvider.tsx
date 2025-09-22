@@ -221,7 +221,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
                 image:
                   typeof item.product === 'object' && item.product.images?.[0]
                     ? typeof item.product.images[0].image === 'object'
-                      ? getMediaUrl(item.product.images[0].image.url, item.product.images[0].image.updatedAt)
+                      ? getMediaUrl(
+                          item.product.images[0].image.url,
+                          item.product.images[0].image.updatedAt,
+                        )
                       : ''
                     : '',
               })),
