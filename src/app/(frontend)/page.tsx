@@ -19,48 +19,94 @@ import type { Product } from '@/payload-types'
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
 
-  // Récupérer les collections TERRA
-  const collections = await payload.find({
-    collection: 'terra-collections',
-    limit: 10,
-    where: {
-      _status: {
-        equals: 'published',
-      },
-    },
-  })
-
-  // Récupérer les produits featured
-  const featuredProducts = await payload.find({
-    collection: 'products',
-    limit: 3,
-    where: {
-      isFeatured: {
-        equals: true,
-      },
-      _status: {
-        equals: 'published',
-      },
-    },
-  })
-
-  // Récupérer les statistiques des collections (nombre de produits par collection)
-  const collectionStats = await Promise.all(
-    ['origin', 'move', 'limited'].map(async (collectionSlug) => {
-      const count = await payload.count({
-        collection: 'products',
-        where: {
-          collection: {
-            equals: collectionSlug,
-          },
-          _status: {
-            equals: 'published',
-          },
+  // Utiliser Promise.allSettled pour éviter que les erreurs cassent toute la page
+  const [collectionsResult, featuredProductsResult] = await Promise.allSettled([
+    payload.find({
+      collection: 'terra-collections',
+      limit: 10,
+      where: {
+        _status: {
+          equals: 'published',
         },
-      })
-      return { slug: collectionSlug, productCount: count.totalDocs }
+      },
     }),
-  )
+    payload.find({
+      collection: 'products',
+      limit: 3,
+      where: {
+        isFeatured: {
+          equals: true,
+        },
+        _status: {
+          equals: 'published',
+        },
+      },
+    }),
+  ])
+
+  // Gérer les résultats avec des valeurs par défaut
+  const collections =
+    collectionsResult.status === 'fulfilled' ? collectionsResult.value : { docs: [] }
+
+  const featuredProducts =
+    featuredProductsResult.status === 'fulfilled' ? featuredProductsResult.value : { docs: [] }
+
+  // DEBUG: Log des collections récupérées
+  console.log('🗂️ Collections from CMS:', {
+    total: collections.docs.length,
+    collections: collections.docs.map((c) => ({
+      name: c.name,
+      slug: c.slug,
+      hasHeroImage: !!c.heroImage,
+      hasLifestyleImage: !!c.lifestyleImage,
+      heroImageType: typeof c.heroImage,
+      lifestyleImageType: typeof c.lifestyleImage,
+    })),
+  })
+
+  // Récupérer les statistiques des collections (une seule requête optimisée)
+  let collectionStats = []
+  try {
+    // Utiliser une seule requête pour récupérer tous les produits et les compter côté client
+    const allProducts = await payload.find({
+      collection: 'products',
+      limit: 1000, // Limite raisonnable
+      select: {
+        collection: true,
+      },
+      where: {
+        _status: {
+          equals: 'published',
+        },
+        collection: {
+          in: ['origin', 'move', 'limited'],
+        },
+      },
+    })
+
+    // Compter côté client pour éviter les requêtes multiples
+    const counts = allProducts.docs.reduce(
+      (acc, product) => {
+        const collection = product.collection as string
+        acc[collection] = (acc[collection] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
+
+    collectionStats = ['origin', 'move', 'limited'].map((slug) => ({
+      slug,
+      productCount: counts[slug] || 0,
+    }))
+  } catch (error) {
+    console.warn('Erreur lors du chargement des statistiques de collection:', error)
+    // Valeurs par défaut en cas d'erreur
+    collectionStats = [
+      { slug: 'origin', productCount: 0 },
+      { slug: 'move', productCount: 0 },
+      { slug: 'limited', productCount: 0 },
+    ]
+  }
 
   // Transformer les données des collections pour l'affichage
   const collectionsData =
@@ -78,10 +124,43 @@ export default async function Page() {
               'Fabrication Europe',
               'Design premium',
             ],
-            image:
-              typeof collection.heroImage === 'object' && collection.heroImage?.url
-                ? collection.heroImage.url
-                : '/images/collections/default-hero.jpg',
+            image: (() => {
+              // DEBUG: Log des données de collection
+              console.log('🔍 DEBUG Collection:', {
+                name: collection.name,
+                slug: collection.slug,
+                heroImageType: typeof collection.heroImage,
+                heroImage: collection.heroImage,
+                lifestyleImageType: typeof collection.lifestyleImage,
+                lifestyleImage: collection.lifestyleImage,
+              })
+
+              // Prioriser heroImage avec optimisation des tailles
+              if (typeof collection.heroImage === 'object' && collection.heroImage) {
+                const imageUrl =
+                  collection.heroImage.sizes?.medium?.url ||
+                  collection.heroImage.url ||
+                  '/images/collections/default-hero.jpg'
+
+                console.log('✅ Using heroImage:', imageUrl)
+                return imageUrl
+              }
+
+              // Fallback sur lifestyleImage
+              if (typeof collection.lifestyleImage === 'object' && collection.lifestyleImage) {
+                const imageUrl =
+                  collection.lifestyleImage.sizes?.medium?.url ||
+                  collection.lifestyleImage.url ||
+                  '/images/collections/default-hero.jpg'
+
+                console.log('⚠️ Using lifestyleImage:', imageUrl)
+                return imageUrl
+              }
+
+              // Image par défaut
+              console.log('❌ Using default image')
+              return '/images/collections/default-hero.jpg'
+            })(),
             slug: collection.slug,
             color:
               collection.slug === 'origin'

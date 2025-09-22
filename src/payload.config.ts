@@ -88,6 +88,11 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      max: 2, // Limite très basse pour Supabase Session Mode
+      min: 0, // Pas de connexions minimum pour économiser
+      idleTimeoutMillis: 5000, // 5 secondes avant de fermer une connexion inactive
+      connectionTimeoutMillis: 10000, // 10 secondes de timeout pour une nouvelle connexion
+      allowExitOnIdle: true, // Permet de fermer le pool quand inactif
     },
     migrationDir: './src/migrations',
   }),

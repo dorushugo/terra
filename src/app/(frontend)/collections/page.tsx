@@ -31,19 +31,37 @@ export const metadata: Metadata = {
 export default async function CollectionsPage() {
   const payload = await getPayload({ config: configPromise })
 
-  // Récupérer les collections TERRA du CMS
-  const collectionsResponse = await payload.find({
-    collection: 'terra-collections',
-    limit: 10,
-    where: {
-      _status: {
-        equals: 'published',
+  // Récupérer les collections TERRA du CMS avec gestion d'erreur
+  let collections: TerraCollection[] = []
+  try {
+    const collectionsResponse = await payload.find({
+      collection: 'terra-collections',
+      limit: 10,
+      where: {
+        _status: {
+          equals: 'published',
+        },
       },
-    },
-    sort: 'createdAt',
-  })
+      sort: 'createdAt',
+    })
+    collections = collectionsResponse.docs as TerraCollection[]
 
-  const collections = collectionsResponse.docs
+    // DEBUG: Log des collections récupérées
+    console.log('🗂️ Collections from CMS (Collections Page):', {
+      total: collections.length,
+      collections: collections.map((c) => ({
+        name: c.name,
+        slug: c.slug,
+        hasHeroImage: !!c.heroImage,
+        hasLifestyleImage: !!c.lifestyleImage,
+        heroImageType: typeof c.heroImage,
+        lifestyleImageType: typeof c.lifestyleImage,
+      })),
+    })
+  } catch (error) {
+    console.warn('Erreur lors du chargement des collections:', error)
+    collections = []
+  }
 
   // Données par défaut si pas de collections dans le CMS
   const defaultCollections = [
@@ -114,12 +132,59 @@ export default async function CollectionsPage() {
                 {/* Image */}
                 <div className={`${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <Leaf className="h-16 w-16 mx-auto mb-4 text-terra-green" />
-                        <p className="font-terra-body">Image de la collection {collection.name}</p>
-                      </div>
-                    </div>
+                    {(() => {
+                      // DEBUG: Log des données de collection
+                      console.log('🔍 DEBUG Collection Page:', {
+                        name: collection.name,
+                        slug: collection.slug,
+                        heroImageType: typeof collection.heroImage,
+                        heroImage: collection.heroImage,
+                        lifestyleImageType: typeof collection.lifestyleImage,
+                        lifestyleImage: collection.lifestyleImage,
+                      })
+
+                      // Gérer les images des collections de la même façon que dans la page d'accueil
+                      let imageUrl = '/images/collections/default-hero.jpg'
+                      let source = 'default'
+
+                      if (typeof collection.heroImage === 'object' && collection.heroImage) {
+                        imageUrl =
+                          collection.heroImage.sizes?.large?.url ||
+                          collection.heroImage.url ||
+                          imageUrl
+                        source = 'heroImage'
+                      } else if (
+                        typeof collection.lifestyleImage === 'object' &&
+                        collection.lifestyleImage
+                      ) {
+                        imageUrl =
+                          collection.lifestyleImage.sizes?.large?.url ||
+                          collection.lifestyleImage.url ||
+                          imageUrl
+                        source = 'lifestyleImage'
+                      } else if (collection.slug === 'origin') {
+                        imageUrl = '/images/collections/origin-hero.jpg'
+                        source = 'static origin'
+                      } else if (collection.slug === 'move') {
+                        imageUrl = '/images/collections/move-hero.jpg'
+                        source = 'static move'
+                      } else if (collection.slug === 'limited') {
+                        imageUrl = '/images/collections/limited-hero.jpg'
+                        source = 'static limited'
+                      }
+
+                      console.log(`📸 Using image from ${source}:`, imageUrl)
+
+                      return (
+                        <Image
+                          src={imageUrl}
+                          alt={`Collection ${collection.name}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      )
+                    })()}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                   </div>
                 </div>
