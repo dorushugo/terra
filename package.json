@@ -10,6 +10,7 @@
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DROP_DATABASE=false next dev",
     "dev:stable": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DROP_DATABASE=false PAYLOAD_DISABLE_ADMIN_HOT_RELOAD=true next dev --turbo",
+    "dev:fast": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DROP_DATABASE=false PAYLOAD_DISABLE_ADMIN_HOT_RELOAD=true PAYLOAD_LOG_LEVEL=warn PAYLOAD_DISABLE_SCHEMA_VALIDATION=true next dev",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",

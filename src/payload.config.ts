@@ -95,6 +95,10 @@ export default buildConfig({
       allowExitOnIdle: true, // Permet de fermer le pool quand inactif
     },
     migrationDir: './src/migrations',
+    push: process.env.NODE_ENV === 'development' ? false : true,
+    transactionOptions: {
+      isolationLevel: 'read committed',
+    },
   }),
   collections: [
     Pages,
