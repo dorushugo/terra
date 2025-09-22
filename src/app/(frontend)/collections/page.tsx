@@ -8,6 +8,7 @@ import { ArrowRight, Leaf, Award, Globe } from 'lucide-react'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { TerraCollection } from '@/payload-types'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export const metadata: Metadata = {
   title: 'Collections TERRA - Style urbain, conscience environnementale',
@@ -43,6 +44,7 @@ export default async function CollectionsPage() {
         },
       },
       sort: 'createdAt',
+      depth: 2,
     })
     collections = collectionsResponse.docs as TerraCollection[]
 
@@ -94,7 +96,33 @@ export default async function CollectionsPage() {
     },
   ]
 
-  const collectionsToShow = collections.length > 0 ? collections : defaultCollections
+  // Normaliser les données pour s'assurer que toutes les collections ont les bonnes propriétés
+  const collectionsToShow =
+    collections.length > 0
+      ? collections
+      : defaultCollections.map((defaultCollection) => ({
+          ...defaultCollection,
+          heroImage: null,
+          lifestyleImage: null,
+          // Ajouter les autres propriétés manquantes si nécessaire
+          keyFeatures: [
+            { feature: 'Matériaux durables' },
+            { feature: 'Fabrication Europe' },
+            { feature: 'Design premium' },
+          ],
+        }))
+
+  // DEBUG: Log des collections à afficher
+  console.log('📋 Collections to show:', {
+    usingCMSData: collections.length > 0,
+    total: collectionsToShow.length,
+    collections: collectionsToShow.map((c) => ({
+      name: c.name,
+      slug: c.slug,
+      hasHeroImage: !!c.heroImage,
+      hasLifestyleImage: !!c.lifestyleImage,
+    })),
+  })
 
   return (
     <div className="min-h-screen bg-white">
@@ -148,20 +176,23 @@ export default async function CollectionsPage() {
                       let source = 'default'
 
                       if (typeof collection.heroImage === 'object' && collection.heroImage) {
-                        imageUrl =
-                          collection.heroImage.sizes?.large?.url ||
-                          collection.heroImage.url ||
-                          imageUrl
-                        source = 'heroImage'
+                        const rawUrl =
+                          collection.heroImage.sizes?.large?.url || collection.heroImage.url
+                        if (rawUrl) {
+                          imageUrl = getMediaUrl(rawUrl, collection.heroImage.updatedAt)
+                          source = 'heroImage'
+                        }
                       } else if (
                         typeof collection.lifestyleImage === 'object' &&
                         collection.lifestyleImage
                       ) {
-                        imageUrl =
+                        const rawUrl =
                           collection.lifestyleImage.sizes?.large?.url ||
-                          collection.lifestyleImage.url ||
-                          imageUrl
-                        source = 'lifestyleImage'
+                          collection.lifestyleImage.url
+                        if (rawUrl) {
+                          imageUrl = getMediaUrl(rawUrl, collection.lifestyleImage.updatedAt)
+                          source = 'lifestyleImage'
+                        }
                       } else if (collection.slug === 'origin') {
                         imageUrl = '/images/collections/origin-hero.jpg'
                         source = 'static origin'
@@ -222,28 +253,37 @@ export default async function CollectionsPage() {
                       )}
                   </div>
 
-                  {/* Caractéristiques par défaut */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
-                        <Leaf className="h-4 w-4 text-terra-green" />
-                        <span>Matériaux recyclés</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
-                        <Globe className="h-4 w-4 text-terra-green" />
-                        <span>Fabrication européenne</span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
-                        <Award className="h-4 w-4 text-terra-green" />
-                        <span>Écoresponsable</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
-                        <ArrowRight className="h-4 w-4 text-terra-green" />
-                        <span>Style intemporel</span>
-                      </div>
-                    </div>
+                  {/* Caractéristiques */}
+                  <div className="space-y-3">
+                    {collection.keyFeatures && collection.keyFeatures.length > 0 ? (
+                      collection.keyFeatures
+                        .slice(0, 4)
+                        .map((feature: any, featureIndex: number) => (
+                          <div
+                            key={featureIndex}
+                            className="flex items-center gap-2 text-sm font-terra-body text-gray-600"
+                          >
+                            <Leaf className="h-4 w-4 text-terra-green flex-shrink-0" />
+                            <span>{feature.feature}</span>
+                          </div>
+                        ))
+                    ) : (
+                      // Fallback vers les caractéristiques par défaut
+                      <>
+                        <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
+                          <Leaf className="h-4 w-4 text-terra-green" />
+                          <span>Matériaux durables</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
+                          <Globe className="h-4 w-4 text-terra-green" />
+                          <span>Fabrication Europe</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm font-terra-body text-gray-600">
+                          <Award className="h-4 w-4 text-terra-green" />
+                          <span>Design premium</span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* CTA */}

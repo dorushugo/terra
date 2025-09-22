@@ -3,7 +3,7 @@ import React from 'react'
 import { TerraHero } from '@/components/terra/TerraHero'
 import { CollectionsShowcase } from '@/components/terra/CollectionsShowcase'
 import { SustainabilityStrip } from '@/components/terra/SustainabilityStrip'
-import { TerraProductCard } from '@/components/terra/TerraProductCard'
+import { LoadMoreProducts } from '@/components/terra/LoadMoreProducts'
 import {
   PageTransition,
   RevealOnScroll,
@@ -15,6 +15,7 @@ import { ArrowRight } from 'lucide-react'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { Product } from '@/payload-types'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
@@ -29,10 +30,11 @@ export default async function Page() {
           equals: 'published',
         },
       },
+      depth: 2,
     }),
     payload.find({
       collection: 'products',
-      limit: 3,
+      limit: 9,
       where: {
         isFeatured: {
           equals: true,
@@ -137,24 +139,23 @@ export default async function Page() {
 
               // Prioriser heroImage avec optimisation des tailles
               if (typeof collection.heroImage === 'object' && collection.heroImage) {
-                const imageUrl =
-                  collection.heroImage.sizes?.medium?.url ||
-                  collection.heroImage.url ||
-                  '/images/collections/default-hero.jpg'
-
-                console.log('✅ Using heroImage:', imageUrl)
-                return imageUrl
+                const rawUrl = collection.heroImage.sizes?.medium?.url || collection.heroImage.url
+                if (rawUrl) {
+                  const imageUrl = getMediaUrl(rawUrl, collection.heroImage.updatedAt)
+                  console.log('✅ Using heroImage:', imageUrl)
+                  return imageUrl
+                }
               }
 
               // Fallback sur lifestyleImage
               if (typeof collection.lifestyleImage === 'object' && collection.lifestyleImage) {
-                const imageUrl =
-                  collection.lifestyleImage.sizes?.medium?.url ||
-                  collection.lifestyleImage.url ||
-                  '/images/collections/default-hero.jpg'
-
-                console.log('⚠️ Using lifestyleImage:', imageUrl)
-                return imageUrl
+                const rawUrl =
+                  collection.lifestyleImage.sizes?.medium?.url || collection.lifestyleImage.url
+                if (rawUrl) {
+                  const imageUrl = getMediaUrl(rawUrl, collection.lifestyleImage.updatedAt)
+                  console.log('⚠️ Using lifestyleImage:', imageUrl)
+                  return imageUrl
+                }
               }
 
               // Image par défaut
@@ -242,11 +243,14 @@ export default async function Page() {
           subtitle="Découvrez notre sélection de sneakers écoresponsables, pensées pour allier style et conscience environnementale."
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <ProductGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProducts.docs.map((product) => (
-                <TerraProductCard key={product.id} product={product as Product} />
-              ))}
-            </ProductGrid>
+            <LoadMoreProducts
+              initialProducts={featuredProducts.docs as Product[]}
+              totalProducts={
+                featuredProductsResult.status === 'fulfilled'
+                  ? featuredProductsResult.value.totalDocs
+                  : undefined
+              }
+            />
           </div>
         </AnimatedSection>
       )}

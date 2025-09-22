@@ -188,7 +188,7 @@ export const TerraFooter: React.FC = () => {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
             <p className="font-terra-body text-gray-400 text-sm">
-              © 2024 TERRA. Tous droits réservés. Sneakers écoresponsables fabriquées avec ❤️ en
+              ©2025 TERRA. Tous droits réservés. Sneakers écoresponsables fabriquées avec ❤️ en
               Europe.
             </p>
 
