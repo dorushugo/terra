@@ -13,6 +13,11 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     cacheTag = encodeURIComponent(cacheTag)
   }
 
+  // Convert old API URLs to direct media URLs
+  if (url.includes('/api/media/file/')) {
+    url = url.replace('/api/media/file/', '/media/')
+  }
+
   // Check if URL already has http/https protocol
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return cacheTag ? `${url}?${cacheTag}` : url

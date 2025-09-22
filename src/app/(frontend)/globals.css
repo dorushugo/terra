@@ -165,9 +165,6 @@
 
   /* Ensure smooth transitions without color interpolation issues */
   .transition-terra-safe {
-    transition-property: transform, box-shadow, opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
   }
 }
 

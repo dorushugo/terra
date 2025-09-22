@@ -126,7 +126,7 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
                     <Link href={`/products?collection=${collection.slug}`}>
                       <Button
                         variant="outline"
-                        className="w-full group border-terra-green text-terra-green hover:bg-terra-green hover:text-white font-terra-display font-semibold transition-terra-safe focus:ring-terra-green focus:ring-offset-0"
+                        className="w-full group border-terra-green bg-transparent text-terra-green hover:bg-terra-green hover:text-white focus:ring-terra-green focus:ring-offset-0"
                       >
                         Voir les produits
                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
