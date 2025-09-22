@@ -110,12 +110,13 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // storage-adapter-placeholder
-    vercelBlobStorage({
-      collections: {
-        media: true, // Enable Vercel Blob storage for the 'media' collection
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
+    // vercelBlobStorage temporairement désactivé pour utiliser le stockage local
+    // vercelBlobStorage({
+    //   collections: {
+    //     media: true, // Enable Vercel Blob storage for the 'media' collection
+    //   },
+    //   token: process.env.BLOB_READ_WRITE_TOKEN || '',
+    // }),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
