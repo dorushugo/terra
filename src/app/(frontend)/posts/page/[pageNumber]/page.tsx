@@ -10,6 +10,7 @@ import PageClient from './page.client'
 import { notFound } from 'next/navigation'
 
 export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 type Args = {
   params: Promise<{
@@ -69,7 +70,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   }
 }
 
+// Désactivé temporairement pour éviter les erreurs de build avec la DB
 export async function generateStaticParams() {
+  return [] // Retourner un tableau vide pour désactiver la génération statique
+  /*
   const payload = await getPayload({ config: configPromise })
   const { totalDocs } = await payload.count({
     collection: 'posts',
@@ -85,4 +89,5 @@ export async function generateStaticParams() {
   }
 
   return pages
+  */
 }

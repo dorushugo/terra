@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: 'Découvrez notre collection complète de sneakers écoresponsables TERRA',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProductsPage() {
   const payload = await getPayload({ config: configPromise })
 

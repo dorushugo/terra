@@ -99,7 +99,4 @@ export default function StockDashboardPage() {
   )
 }
 
-export const metadata = {
-  title: 'Gestion des Stocks - TERRA Admin',
-  description: 'Dashboard de gestion des stocks et inventaires TERRA',
-}
+// Metadata moved to layout.tsx to avoid client component export error

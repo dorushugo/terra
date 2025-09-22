@@ -13,7 +13,12 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
+export const dynamic = 'force-dynamic'
+
+// Désactivé temporairement pour éviter les erreurs de build avec la DB
 export async function generateStaticParams() {
+  return [] // Retourner un tableau vide pour désactiver la génération statique
+  /*
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
     collection: 'pages',
@@ -35,6 +40,7 @@ export async function generateStaticParams() {
     })
 
   return params
+  */
 }
 
 type Args = {

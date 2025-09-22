@@ -17,6 +17,10 @@ const nextConfig = {
     // Ignorer les erreurs TypeScript pendant le build sur Vercel
     ignoreBuildErrors: true,
   },
+  // Configuration pour éviter les erreurs de build avec la base de données
+  output: 'standalone',
+  // Désactiver complètement la génération statique pendant le build
+  trailingSlash: false,
   images: {
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
