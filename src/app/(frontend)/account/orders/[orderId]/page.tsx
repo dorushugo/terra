@@ -14,3 +14,4 @@ export default async function OrderDetailPage({ params }: Props) {
   const { orderId } = await params
   return <OrderDetailPageClient orderId={orderId} />
 }
+
