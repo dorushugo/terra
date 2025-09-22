@@ -9,9 +9,9 @@ export const TerraFooter: React.FC = () => {
     {
       title: 'Collections',
       links: [
-        { name: 'TERRA Origin', href: '/collections/origin' },
-        { name: 'TERRA Move', href: '/collections/move' },
-        { name: 'TERRA Limited', href: '/collections/limited' },
+        { name: 'TERRA Origin', href: '/products?collection=origin' },
+        { name: 'TERRA Move', href: '/products?collection=move' },
+        { name: 'TERRA Limited', href: '/products?collection=limited' },
         { name: 'Tous les produits', href: '/products' },
       ],
     },

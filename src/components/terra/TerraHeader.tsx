@@ -109,13 +109,13 @@ export const TerraHeader: React.FC = () => {
   const navigation = [
     {
       name: 'Collections',
-      href: '/collections',
+      href: '/products',
       hasDropdown: true,
       dropdownItems: [
-        { name: 'Toutes les collections', href: '/collections' },
-        { name: 'TERRA Origin', href: '/collections/origin', badge: 'À partir de 139€' },
-        { name: 'TERRA Move', href: '/collections/move', badge: 'À partir de 159€' },
-        { name: 'TERRA Limited', href: '/collections/limited', badge: 'Édition limitée' },
+        { name: 'Toutes les collections', href: '/products' },
+        { name: 'TERRA Origin', href: '/products?collection=origin', badge: 'À partir de 139€' },
+        { name: 'TERRA Move', href: '/products?collection=move', badge: 'À partir de 159€' },
+        { name: 'TERRA Limited', href: '/products?collection=limited', badge: 'Édition limitée' },
       ],
     },
     { name: 'Produits', href: '/products' },
