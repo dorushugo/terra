@@ -39,8 +39,9 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    // Nouvelles images → Vercel Blob (configuré via plugin)
-    // Images existantes → servies depuis /media/ (gérées par getMediaUrl)
+    // Upload vers public/media pour le développement local
+    // Les images existantes et nouvelles seront servies depuis /media/
+    staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     imageSizes: [

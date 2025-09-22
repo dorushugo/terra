@@ -110,14 +110,15 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // storage-adapter-placeholder
-    vercelBlobStorage({
-      collections: {
-        media: {
-          prefix: 'terra-media', // Préfixe pour organiser les fichiers
-        },
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
+    // Temporairement désactivé à cause de l'erreur UploadHandlersProvider
+    // vercelBlobStorage({
+    //   collections: {
+    //     media: {
+    //       prefix: 'terra-media',
+    //     },
+    //   },
+    //   token: process.env.BLOB_READ_WRITE_TOKEN || '',
+    // }),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,

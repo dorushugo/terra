@@ -17,7 +17,7 @@ export const CookieSettingsButton: React.FC = () => {
       variant="outline"
       size="sm"
       onClick={handleOpenSettings}
-      className="border-terra-green text-terra-green hover:bg-terra-green hover:text-white font-terra-body font-medium"
+      className="border-terra-green !text-terra-green hover:!bg-terra-green hover:!text-white font-terra-body font-medium"
     >
       <Settings className="mr-2 h-4 w-4" />
       Gérer les cookies

@@ -151,6 +151,43 @@
   .text-clay-orange {
     color: #d4a574;
   }
+
+  /* Fix pour les boutons outline avec texte blanc sur toutes les plateformes */
+  .btn-outline-white {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    background-color: transparent !important;
+  }
+
+  .btn-outline-white:hover {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+  }
+
+  /* Fix spécifique pour le bouton "Notre impact" */
+  .terra-hero-outline-btn {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    background-color: transparent !important;
+  }
+
+  .terra-hero-outline-btn:hover {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+  }
+
+  /* Fix global pour tous les boutons outline - prévient le texte jaune sur Android/Windows */
+  button[data-variant='outline'] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  /* Force les couleurs correctes pour les boutons outline */
+  .outline-btn-fix {
+    -webkit-text-fill-color: initial !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
 }
 
 html {

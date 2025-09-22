@@ -195,7 +195,7 @@ export const TerraHero: React.FC<TerraHeroProps> = ({ title, subtitle, image, ct
               <Button
                 variant="outline"
                 size="lg"
-                className="border-white/60 text-white hover:bg-white text-urban-black font-terra-body font-medium px-8 py-4 text-base transition-all duration-200"
+                className="terra-hero-outline-btn font-terra-body font-medium px-8 py-4 text-base transition-all duration-200"
               >
                 Notre impact
               </Button>
