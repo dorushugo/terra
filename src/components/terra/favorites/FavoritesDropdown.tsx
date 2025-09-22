@@ -100,13 +100,14 @@ export const FavoritesDropdown: React.FC<FavoritesDropdownProps> = ({ isOpen, on
                 >
                   <div className="flex gap-4">
                     {/* Image */}
-                    <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                    <div className="w-16 h-10 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
                       {favorite.product.images?.[0] &&
-                        typeof favorite.product.images[0] === 'object' && (
+                        typeof favorite.product.images[0] === 'object' &&
+                        typeof favorite.product.images[0].image === 'object' && (
                           <Image
-                            src={getMediaUrl(favorite.product.images[0])}
-                            alt={favorite.product.name || ''}
-                            width={64}
+                            src={getMediaUrl(favorite.product.images[0].image.url)}
+                            alt={favorite.product.title || ''}
+                            width={100}
                             height={64}
                             className="w-full h-full object-cover"
                           />

@@ -166,7 +166,7 @@ export default async function Page() {
         </section>
       )}
 
-      {/* Newsletter Section */}
+      {/* Newsletter Section }
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center">
@@ -198,7 +198,7 @@ export default async function Page() {
             </p>
           </div>
         </div>
-      </section>
+      </section>*/}
     </React.Fragment>
   )
 }

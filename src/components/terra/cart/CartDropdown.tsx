@@ -99,7 +99,7 @@ export const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose }) =
                       {item.product.images?.[0] &&
                         typeof item.product.images[0].image === 'object' && (
                           <Image
-                            src={item.product.images[0].image.url || ''}
+                            src={getMediaUrl(item.product.images[0].image.url, item.product.images[0].image.updatedAt)}
                             alt={item.product.title || ''}
                             width={64}
                             height={64}

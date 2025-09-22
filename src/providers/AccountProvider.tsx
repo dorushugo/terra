@@ -9,6 +9,7 @@ import React, {
   useMemo,
   ReactNode,
 } from 'react'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export interface User {
   id: string
@@ -220,7 +221,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
                 image:
                   typeof item.product === 'object' && item.product.images?.[0]
                     ? typeof item.product.images[0].image === 'object'
-                      ? item.product.images[0].image.url
+                      ? getMediaUrl(item.product.images[0].image.url, item.product.images[0].image.updatedAt)
                       : ''
                     : '',
               })),

@@ -61,7 +61,7 @@ export const TerraHero: React.FC<TerraHeroProps> = ({ title, subtitle, image, ct
             <Button
               variant="terra"
               size="lg"
-              className="bg-terra-green hover:bg-terra-green/90 text-white font-terra-body font-medium px-8 py-4 text-base group transition-all duration-200"
+              className="bg-terra-green hover:bg-terra-green/90 text-white font-terra-body font-medium px-8 py-4 text-base group transition-terra-safe"
               onClick={handleCtaClick}
             >
               {cta}

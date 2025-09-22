@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TerraEcoScore } from '@/components/terra/TerraEcoScore'
 import { TerraProductCard } from '@/components/terra/TerraProductCard'
 import { FavoriteButton } from '@/components/terra/favorites/FavoriteButton'
+import { ViewTransition } from '@/components/ui/ViewTransition'
 import { useCart } from '@/providers/CartProvider'
 import { useFavorites } from '@/providers/FavoritesProvider'
 import type { Product } from '@/payload-types'
@@ -108,13 +109,13 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
       <nav className="border-b bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center text-sm font-terra-body text-gray-600">
-            <Link href="/" className="hover:text-terra-green transition-colors">
+            <ViewTransition href="/" className="hover:text-terra-green transition-colors">
               Accueil
-            </Link>
+            </ViewTransition>
             <span className="mx-2">/</span>
-            <Link href="/products" className="hover:text-terra-green transition-colors">
+            <ViewTransition href="/products" className="hover:text-terra-green transition-colors">
               Produits
-            </Link>
+            </ViewTransition>
             <span className="mx-2">/</span>
             <span className="text-urban-black">{product.title}</span>
           </div>
@@ -131,12 +132,13 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
               {product.images?.[selectedImageIndex] &&
                 typeof product.images[selectedImageIndex].image === 'object' && (
                   <Image
-                    src={product.images[selectedImageIndex].image.url || ''}
+                    src={getMediaUrl(product.images[selectedImageIndex].image.url, product.images[selectedImageIndex].image.updatedAt)}
                     alt={product.images[selectedImageIndex].alt || product.title}
                     fill
-                    className="object-contain p-6 transition-all duration-300"
+                    className="object-contain p-6 transition-terra-smooth"
                     priority
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{ viewTransitionName: `product-image-${product.slug}` }}
                   />
                 )}
             </div>
@@ -154,7 +156,7 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
                   >
                     {typeof imageItem.image === 'object' && (
                       <Image
-                        src={imageItem.image.url || ''}
+                        src={getMediaUrl(imageItem.image.url, imageItem.image.updatedAt)}
                         alt={imageItem.alt || `${product.title} ${index + 1}`}
                         fill
                         className="object-contain p-2"

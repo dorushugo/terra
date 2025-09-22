@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ShoppingBag, Eye, Check, X } from 'lucide-react'
 import { TerraEcoScore } from './TerraEcoScore'
 import { FavoriteButton } from './favorites/FavoriteButton'
+import { ViewTransition } from '@/components/ui/ViewTransition'
 import { useCart } from '@/providers/CartProvider'
 import type { Product } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
@@ -111,7 +111,8 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
 
   return (
     <Card
-      className={`group relative overflow-hidden bg-white hover:shadow-xl transition-all duration-500 hover:-translate-y-1 ${className}`}
+      className={`group relative overflow-hidden bg-white hover:shadow-xl transition-terra-smooth hover-lift ${className}`}
+      style={{ viewTransitionName: `product-card-${product.slug}` }}
     >
       <div className="relative aspect-square overflow-hidden bg-white">
         {/* Image principale */}
@@ -120,16 +121,18 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
             src={mainImageUrl}
             alt={mainImage?.alt || product.title}
             fill
-            className="object-contain p-6 transition-all duration-500 group-hover:opacity-0 group-hover:scale-105"
+            className="object-contain p-6 transition-terra-smooth group-hover:opacity-0 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            style={{ viewTransitionName: `product-image-${product.slug}` }}
           />
         ) : (
           <Image
             src="/website-template-OG.webp"
             alt={product.title}
             fill
-            className="object-contain p-6 transition-all duration-500 group-hover:opacity-0 group-hover:scale-105"
+            className="object-contain p-6 transition-terra-smooth group-hover:opacity-0 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            style={{ viewTransitionName: `product-image-${product.slug}` }}
           />
         )}
 
@@ -139,7 +142,7 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
             src={hoverImageUrl}
             alt={hoverImage?.alt || product.title}
             fill
-            className="object-contain p-6 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
+            className="object-contain p-6 opacity-0 transition-terra-smooth group-hover:opacity-100 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
         )}
@@ -168,7 +171,7 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
         {/* Actions au hover */}
         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3 z-10 pointer-events-none">
           <div className="pointer-events-auto flex gap-3">
-            <Link href={`/products/${product.slug}`}>
+            <ViewTransition href={`/products/${product.slug}`}>
               <Button
                 size="sm"
                 variant="secondary"
@@ -177,7 +180,7 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
                 <Eye className="h-4 w-4 mr-2" />
                 Voir
               </Button>
-            </Link>
+            </ViewTransition>
 
             <Button
               size="sm"
@@ -242,9 +245,9 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
       </div>
 
       <CardContent className="p-4">
-        <Link
+        <ViewTransition
           href={`/products/${product.slug}`}
-          className="block group-hover:scale-[1.02] transition-transform duration-300"
+          className="block group-hover:scale-[1.02] transition-terra-safe"
         >
           <div className="space-y-3">
             {/* Titre et prix */}
@@ -320,7 +323,7 @@ export const TerraProductCard: React.FC<TerraProductCardProps> = ({
               </div>
             )}
           </div>
-        </Link>
+        </ViewTransition>
       </CardContent>
 
       {/* Modal de sélection rapide */}

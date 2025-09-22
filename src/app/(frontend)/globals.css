@@ -35,7 +35,7 @@
     --popover: 255 255 255;
     --popover-foreground: 26 26 26;
 
-    --primary: #169b78; /* terra-green */
+    --primary: #2d5a27; /* terra-green */
     --primary-foreground: 245 245 240;
 
     --secondary: 156 175 136; /* sage-green */
@@ -44,7 +44,7 @@
     --muted: 250 250 250;
     --muted-foreground: 115 115 115;
 
-    --accent: 45 90 39; /* terra-green */
+    --accent: #2d5a27; /* terra-green */
     --accent-foreground: 255 255 255;
 
     --destructive: 0 84.2% 60.2%;
@@ -52,12 +52,12 @@
 
     --border: 228 228 228;
     --input: 250 250 250;
-    --ring: 45 90 39;
+    --ring: #2d5a27;
 
     --radius: 0.5rem;
 
-    --success: 45 90 39;
-    --warning: 45 90 39;
+    --success: #2d5a27;
+    --warning: #2d5a27;
     --error: 220 38 38;
   }
 
@@ -72,7 +72,7 @@
     --popover: 38 38 38;
     --popover-foreground: 255 255 255;
 
-    --primary: 45 90 39; /* terra-green */
+    --primary: #2d5a27; /* terra-green */
     --primary-foreground: 255 255 255;
 
     --secondary: 156 175 136; /* sage-green */
@@ -81,7 +81,7 @@
     --muted: 64 64 64;
     --muted-foreground: 163 163 163;
 
-    --accent: 45 90 39; /* terra-green */
+    --accent: #2d5a27; /* terra-green */
     --accent-foreground: 255 255 255;
 
     --destructive: 220 38 38;
@@ -89,10 +89,10 @@
 
     --border: 64 64 64;
     --input: 38 38 38;
-    --ring: 45 90 39;
+    --ring: #2d5a27;
 
-    --success: 45 90 39;
-    --warning: 45 90 39;
+    --success: #2d5a27;
+    --warning: #2d5a27;
     --error: 220 38 38;
   }
 }
@@ -104,100 +104,52 @@
   body {
     @apply bg-neutral-50 text-foreground min-h-[100vh] flex flex-col;
   }
-
-  /* Override Tailwind default link styles globally */
-  a:not([class*='bg-']):not([class*='text-white']) {
-    color: inherit !important;
-    text-decoration: none !important;
-  }
-
-  a:not([class*='bg-']):not([class*='text-white']):hover {
-    color: inherit !important;
-    text-decoration: none !important;
-  }
-
-  /* Styles spécifiques pour les liens Terra */
-  a.text-terra-green,
-  a.text-terra-green:hover {
-    color: #179a78 !important;
-  }
-
-  a.text-terra-green:hover {
-    opacity: 0.8;
-  }
-
-  /* Liens dans le contenu riche (prose) */
-  .prose a {
-    color: #179a78 !important;
-    text-decoration: underline !important;
-  }
-
-  .prose a:hover {
-    color: #179a78 !important;
-    opacity: 0.8;
-    text-decoration: underline !important;
-  }
-
-  /* Empêcher les boutons avec liens de devenir blancs */
-  button a,
-  .button a,
-  [role='button'] a {
-    color: inherit !important;
-  }
-
-  button a:hover,
-  .button a:hover,
-  [role='button'] a:hover {
-    color: inherit !important;
-  }
 }
 
-/* Prevent yellow flash during transitions */
+/* Terra brand colors as utilities */
 @layer components {
-  /* Force specific color values to avoid browser interpolation issues */
   .bg-terra-green {
-    background-color: #2d5a27 !important;
+    background-color: #2d5a27;
   }
 
-  .hover\:bg-terra-green\/90:hover {
-    background-color: #254a20 !important;
+  .text-terra-green {
+    color: #2d5a27;
   }
 
-  /* Ensure smooth transitions without color interpolation issues */
-  .transition-terra-safe {
-  }
-}
-
-/* CRITICAL FIX: Override all Tailwind hover text color changes */
-@layer utilities {
-  /* Reset all hover text color changes to inherit */
-  .hover\:text-accent-foreground:hover,
-  .hover\:text-white:hover,
-  .hover\:text-gray-900:hover,
-  .hover\:text-primary:hover,
-  .hover\:text-secondary:hover {
-    color: inherit !important;
+  .border-terra-green {
+    border-color: #2d5a27;
   }
 
-  /* Specifically target button variants that cause issues */
-  button.hover\:text-accent-foreground:hover,
-  button.hover\:text-white:hover,
-  [class*='hover:text-']:hover {
-    color: inherit !important;
+  .bg-sage-green {
+    background-color: #9caf88;
   }
 
-  /* Override any link inside button hover behavior */
-  button:hover a,
-  button a:hover,
-  .button:hover a,
-  .button a:hover {
-    color: inherit !important;
+  .text-sage-green {
+    color: #9caf88;
   }
 
-  /* Ensure buttons with outline variant don't change link colors */
-  button[class*='outline']:hover,
-  button[class*='outline']:hover * {
-    color: inherit !important;
+  .bg-urban-black {
+    background-color: #1a1a1a;
+  }
+
+  .text-urban-black {
+    color: #1a1a1a;
+  }
+
+  .bg-stone-white {
+    background-color: #f5f5f0;
+  }
+
+  .text-stone-white {
+    color: #f5f5f0;
+  }
+
+  .bg-clay-orange {
+    background-color: #d4a574;
+  }
+
+  .text-clay-orange {
+    color: #d4a574;
   }
 }
 
@@ -208,4 +160,141 @@ html {
 html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
+}
+
+/* View Transitions API Styles */
+@layer utilities {
+  /* Transition pour toute la page */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Transition fade pour le contenu principal */
+  ::view-transition-old(main-content) {
+    animation: slide-out-left 300ms ease-in-out;
+  }
+
+  ::view-transition-new(main-content) {
+    animation: slide-in-right 300ms ease-in-out;
+  }
+
+  /* Transition spéciale pour les cartes produit */
+  ::view-transition-old(product-card) {
+    animation: scale-out 250ms ease-in-out;
+  }
+
+  ::view-transition-new(product-card) {
+    animation: scale-in 250ms ease-in-out;
+  }
+
+  /* Transition pour les images de produits */
+  ::view-transition-old(product-image) {
+    animation: zoom-out 400ms ease-in-out;
+  }
+
+  ::view-transition-new(product-image) {
+    animation: zoom-in 400ms ease-in-out;
+  }
+
+  /* Animations personnalisées */
+  @keyframes slide-out-left {
+    to {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-out {
+    to {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      transform: scale(1.1);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes zoom-out {
+    to {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  @keyframes zoom-in {
+    from {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Transition pour les éléments partagés */
+  .shared-element {
+    view-transition-name: var(--transition-name);
+  }
+
+  /* Optimisations performance */
+  .transition-terra-safe {
+    transition-property: transform, opacity, background-color, border-color, color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+  }
+
+  .transition-terra-smooth {
+    transition-property: all;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Loading states pour les transitions */
+  .loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 2s infinite;
+  }
+
+  @keyframes loading-shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Hover optimisé */
+  .hover-lift {
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
 }

@@ -97,7 +97,7 @@ const StockManagementDashboard: React.FC = () => {
       case 'high':
         return 'bg-orange-500'
       case 'medium':
-        return 'bg-yellow-500'
+        return 'bg-terra-green'
       case 'low':
         return 'bg-green-500'
       default:

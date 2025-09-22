@@ -57,7 +57,7 @@ const config = {
       },
       colors: {
         // TERRA Brand Colors
-        'terra-green': '#179A78',
+        'terra-green': '#2d5a27',
         'stone-white': '#F5F5F0',
         'urban-black': '#1A1A1A',
         'sage-green': '#9CAF88',

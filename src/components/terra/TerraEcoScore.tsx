@@ -21,14 +21,14 @@ export const TerraEcoScore: React.FC<TerraEcoScoreProps> = ({
   const getScoreColor = (score: number) => {
     if (score >= 8) return 'text-terra-green'
     if (score >= 6) return 'text-sage-green'
-    if (score >= 4) return 'text-yellow-600'
+    if (score >= 4) return 'text-terra-green'
     return 'text-red-500'
   }
 
   const getScoreBackground = (score: number) => {
     if (score >= 8) return 'bg-terra-green'
     if (score >= 6) return 'bg-sage-green'
-    if (score >= 4) return 'bg-yellow-600'
+    if (score >= 4) return 'bg-terra-green'
     return 'bg-red-500'
   }
 
