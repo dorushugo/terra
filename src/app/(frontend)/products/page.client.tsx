@@ -2,10 +2,17 @@
 
 import React, { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { TerraProductCard } from '@/components/terra/TerraProductCard'
 import { TerraFilters } from '@/components/terra/TerraFilters'
-import { PageTransition, ProductGrid } from '@/components/ui/PageTransition'
+import {
+  MotionPage,
+  MotionSection,
+  MotionGrid,
+  MotionFadeIn,
+} from '@/components/ui/MotionTransitions'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -40,19 +47,31 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
     featured: false,
   })
 
+  const [sortBy, setSortBy] = useState('newest')
+  const [searchQuery, setSearchQuery] = useState('')
+
   // Appliquer les filtres depuis l'URL au chargement
   useEffect(() => {
     const collectionParam = searchParams.get('collection')
+    const searchParam = searchParams.get('search')
+
     if (collectionParam) {
       setFilters((prev) => ({
         ...prev,
         collections: [collectionParam],
       }))
     }
+
+    if (searchParam) {
+      setSearchQuery(searchParam)
+    }
   }, [searchParams])
 
   // Titre dynamique basé sur les filtres
   const getPageTitle = () => {
+    if (searchQuery) {
+      return `Résultats pour "${searchQuery}"`
+    }
     if (filters.collections.length === 1) {
       const collection = filters.collections[0] as keyof typeof COLLECTIONS_LABELS
       return COLLECTIONS_LABELS[collection] || 'Tous nos produits'
@@ -61,6 +80,9 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
   }
 
   const getPageDescription = () => {
+    if (searchQuery) {
+      return `Découvrez tous les produits correspondant à votre recherche`
+    }
     if (filters.collections.length === 1) {
       const collection = filters.collections[0]
       const descriptions = {
@@ -76,12 +98,32 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
     return 'Découvrez notre collection complète de sneakers écoresponsables'
   }
 
-  const [sortBy, setSortBy] = useState('newest')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   // Filtrer et trier les produits
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...initialProducts]
+
+    // Appliquer la recherche textuelle
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter((product) => {
+        return (
+          product.title.toLowerCase().includes(query) ||
+          product.shortDescription?.toLowerCase().includes(query) ||
+          product.collection.toLowerCase().includes(query) ||
+          product.colors?.some(
+            (color: any) =>
+              color.name?.toLowerCase().includes(query) ||
+              color.value?.toLowerCase().includes(query),
+          ) ||
+          product.sustainability?.materials?.some((material: any) =>
+            material.name?.toLowerCase().includes(query),
+          ) ||
+          product.features?.some((feature: any) => feature.feature?.toLowerCase().includes(query))
+        )
+      })
+    }
 
     // Appliquer les filtres
     if (filters.collections.length > 0) {
@@ -144,28 +186,49 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
     }
 
     return filtered
-  }, [initialProducts, filters, sortBy])
+  }, [initialProducts, filters, sortBy, searchQuery])
 
   const handleFiltersChange = (newFilters: typeof filters) => {
     setFilters(newFilters)
   }
 
   return (
-    <PageTransition animation="page" className="min-h-screen bg-white pt-16">
+    <MotionPage className="min-h-screen bg-white pt-16">
       {/* Header */}
       <section className="bg-white border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <PageTransition animation="text" delay={100}>
+            <MotionFadeIn delay={0.1}>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-terra-display font-bold text-urban-black mb-2">
                   {getPageTitle()}
                 </h1>
                 <p className="text-gray-600 font-terra-body">{getPageDescription()}</p>
+                {searchQuery && (
+                  <div className="flex items-center mt-3">
+                    <Badge
+                      variant="secondary"
+                      className="bg-terra-green/10 text-terra-green border-terra-green/20"
+                    >
+                      Recherche active : "{searchQuery}"
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSearchQuery('')
+                        window.history.replaceState({}, '', '/products')
+                      }}
+                      className="ml-2 h-6 px-2 text-xs text-gray-500 hover:text-gray-700"
+                    >
+                      Effacer
+                    </Button>
+                  </div>
+                )}
               </div>
-            </PageTransition>
+            </MotionFadeIn>
 
-            <PageTransition animation="content" delay={200}>
+            <MotionFadeIn delay={0.2}>
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600 font-terra-body">
                   {filteredAndSortedProducts.length} produit
@@ -206,7 +269,7 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
                   </Button>
                 </div>
               </div>
-            </PageTransition>
+            </MotionFadeIn>
           </div>
         </div>
       </section>
@@ -254,28 +317,30 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
                 </Button>
               </div>
             ) : viewMode === 'grid' ? (
-              <ProductGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredAndSortedProducts.map((product) => (
                   <TerraProductCard key={product.id} product={product} viewMode={viewMode} />
                 ))}
-              </ProductGrid>
+              </MotionGrid>
             ) : (
-              <PageTransition animation="content" delay={300}>
+              <MotionSection variant="content" delay={0.3}>
                 <div className="space-y-4">
                   {filteredAndSortedProducts.map((product, index) => (
-                    <div
+                    <motion.div
                       key={product.id}
-                      className={`grid-enter grid-stagger-${Math.min(index + 1, 6)}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
                     >
                       <TerraProductCard product={product} viewMode={viewMode} />
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </PageTransition>
+              </MotionSection>
             )}
           </main>
         </div>
       </div>
-    </PageTransition>
+    </MotionPage>
   )
 }

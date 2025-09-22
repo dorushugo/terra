@@ -373,7 +373,7 @@ const CheckoutClient = () => {
                 {!clientSecret ? (
                   <Button
                     onClick={handleCreatePaymentIntent}
-                    className="w-full h-12 text-lg bg-terra-green"
+                    className="w-full h-12 text-lg bg-terra-green hover:bg-terra-green/90 "
                     disabled={loading}
                   >
                     {loading ? (

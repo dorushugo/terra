@@ -9,6 +9,8 @@ import { Toaster } from 'sonner'
 import { AdminBar } from '@/components/AdminBar'
 import { TerraHeader } from '@/components/terra/TerraHeader'
 import { TerraFooter } from '@/components/terra/TerraFooter'
+import { CookieBanner } from '@/components/terra/CookieBanner'
+import { Analytics } from '@/components/terra/Analytics'
 import { ProgressBar } from '@/components/ui/LoadingTransition'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
@@ -44,6 +46,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               },
             }}
           />
+          <CookieBanner />
+          <Analytics />
         </Providers>
       </body>
     </html>

@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown } from 'lucide-react'
 import { CartDropdown } from './cart/CartDropdown'
 import { FavoritesDropdown } from './favorites/FavoritesDropdown'
+import { SearchDropdown } from './search/SearchDropdown'
 import { useCart } from '@/providers/CartProvider'
 import { useFavorites } from '@/providers/FavoritesProvider'
 import { useAccount } from '@/providers/AccountProvider'
@@ -18,10 +20,13 @@ export const TerraHeader: React.FC = () => {
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const pathname = usePathname()
 
   const cartRef = useRef<HTMLDivElement>(null)
   const favoritesRef = useRef<HTMLDivElement>(null)
+  const collectionsRef = useRef<HTMLDivElement>(null)
+  const collectionsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const { totalItems } = useCart()
   const { favoritesCount } = useFavorites()
@@ -35,6 +40,30 @@ export const TerraHeader: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Nettoyer le timeout au démontage
+  useEffect(() => {
+    return () => {
+      if (collectionsTimeoutRef.current) {
+        clearTimeout(collectionsTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Fonctions pour gérer le dropdown collections avec délai
+  const handleCollectionsMouseEnter = () => {
+    if (collectionsTimeoutRef.current) {
+      clearTimeout(collectionsTimeoutRef.current)
+      collectionsTimeoutRef.current = null
+    }
+    setIsCollectionsOpen(true)
+  }
+
+  const handleCollectionsMouseLeave = () => {
+    collectionsTimeoutRef.current = setTimeout(() => {
+      setIsCollectionsOpen(false)
+    }, 300) // Délai de 300ms avant fermeture
+  }
+
   // Fermer les dropdowns quand on clique ailleurs
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -44,11 +73,38 @@ export const TerraHeader: React.FC = () => {
       if (favoritesRef.current && !favoritesRef.current.contains(event.target as Node)) {
         setIsFavoritesOpen(false)
       }
+      if (collectionsRef.current && !collectionsRef.current.contains(event.target as Node)) {
+        setIsCollectionsOpen(false)
+        if (collectionsTimeoutRef.current) {
+          clearTimeout(collectionsTimeoutRef.current)
+          collectionsTimeoutRef.current = null
+        }
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Gérer les raccourcis clavier
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ctrl/Cmd + K pour ouvrir la recherche
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault()
+        setIsSearchOpen(true)
+        setIsCartOpen(false)
+        setIsFavoritesOpen(false)
+      }
+      // Échapper pour fermer la recherche
+      if (event.key === 'Escape' && isSearchOpen) {
+        setIsSearchOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isSearchOpen])
 
   const navigation = [
     {
@@ -90,9 +146,10 @@ export const TerraHeader: React.FC = () => {
               <div key={item.name} className="relative group">
                 {item.hasDropdown ? (
                   <div
+                    ref={collectionsRef}
                     className="flex items-center space-x-1 cursor-pointer"
-                    onMouseEnter={() => setIsCollectionsOpen(true)}
-                    onMouseLeave={() => setIsCollectionsOpen(false)}
+                    onMouseEnter={handleCollectionsMouseEnter}
+                    onMouseLeave={handleCollectionsMouseLeave}
                   >
                     <Link
                       href={item.href}
@@ -104,9 +161,26 @@ export const TerraHeader: React.FC = () => {
                     </Link>
                     <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-terra-green transition-colors" />
 
-                    {/* Dropdown */}
-                    {isCollectionsOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                    {/* Dropdown avec zone de transition invisible */}
+                    <AnimatePresence>
+                      {isCollectionsOpen && (
+                        <div 
+                          className="absolute top-full left-0 pt-2 z-50"
+                          onMouseEnter={handleCollectionsMouseEnter}
+                          onMouseLeave={handleCollectionsMouseLeave}
+                        >
+                          {/* Zone invisible pour faciliter la transition */}
+                          <div className="absolute top-0 left-0 right-0 h-2 bg-transparent" />
+                          <motion.div 
+                            className="w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2"
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            transition={{ 
+                              duration: 0.2, 
+                              ease: [0.16, 1, 0.3, 1] as any 
+                            }}
+                          >
                         {item.dropdownItems?.map((dropdownItem) => (
                           <Link
                             key={dropdownItem.name}
@@ -125,8 +199,10 @@ export const TerraHeader: React.FC = () => {
                             </div>
                           </Link>
                         ))}
-                      </div>
-                    )}
+                          </motion.div>
+                        </div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ) : (
                   <Link
@@ -144,15 +220,24 @@ export const TerraHeader: React.FC = () => {
 
           {/* Actions Desktop */}
           <div className="hidden lg:flex items-center space-x-4">
-            {/* Barre de recherche */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-terra-green focus:border-transparent font-terra-body text-sm transition-all"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            </div>
+            {/* Bouton de recherche */}
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsSearchOpen(true)
+                setIsCartOpen(false)
+                setIsFavoritesOpen(false)
+              }}
+              className="w-64 justify-start text-left font-terra-body text-sm text-gray-500 border-gray-300 hover:border-terra-green hover:text-terra-green bg-white"
+            >
+              <Search className="h-4 w-4 mr-3" />
+              <span>Rechercher...</span>
+              <div className="ml-auto flex items-center space-x-1">
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 px-1.5 font-mono text-[10px] font-medium text-gray-400 opacity-100">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </div>
+            </Button>
 
             {/* Favoris */}
             <div className="relative" ref={favoritesRef}>
@@ -244,14 +329,17 @@ export const TerraHeader: React.FC = () => {
           <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-xl">
             <div className="px-4 py-6 space-y-6">
               {/* Search Mobile */}
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Rechercher..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-terra-green focus:border-transparent font-terra-body"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              </div>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsSearchOpen(true)
+                  setIsMenuOpen(false)
+                }}
+                className="w-full justify-start text-left font-terra-body text-gray-500 border-gray-300 py-3"
+              >
+                <Search className="h-5 w-5 mr-3" />
+                <span>Rechercher des sneakers...</span>
+              </Button>
 
               {/* Navigation Mobile */}
               <nav className="space-y-4">
@@ -340,6 +428,16 @@ export const TerraHeader: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Search Dropdown */}
+      <SearchDropdown
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onSearch={(query) => {
+          console.log('Recherche:', query)
+          // La navigation est gérée dans SearchDropdown
+        }}
+      />
     </header>
   )
 }

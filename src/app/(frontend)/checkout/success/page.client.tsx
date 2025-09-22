@@ -301,7 +301,10 @@ const CheckoutSuccessClient = () => {
 
             {/* Actions */}
             <div className="space-y-3">
-              <Button onClick={() => router.push('/')} className="w-full">
+              <Button
+                onClick={() => router.push('/')}
+                className="w-full bg-terra-green hover:bg-terra-green/90 "
+              >
                 <Home className="h-4 w-4 mr-2" />
                 Continuer mes achats
               </Button>

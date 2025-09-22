@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -10,11 +11,14 @@ import { TerraProductCard } from '@/components/terra/TerraProductCard'
 import { FavoriteButton } from '@/components/terra/favorites/FavoriteButton'
 import { ViewTransition } from '@/components/ui/ViewTransition'
 import {
-  PageTransition,
-  RevealOnScroll,
-  AnimatedSection,
-  ProductGrid,
-} from '@/components/ui/PageTransition'
+  MotionPage,
+  MotionSection,
+  MotionGrid,
+  MotionFadeIn,
+  productImageVariants,
+  buttonVariants,
+  useScrollAnimation,
+} from '@/components/ui/MotionTransitions'
 import { useCart } from '@/providers/CartProvider'
 import { useFavorites } from '@/providers/FavoritesProvider'
 import type { Product } from '@/payload-types'
@@ -47,6 +51,7 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
 
   const { addToCart } = useCart()
   const { toggleFavorite, isFavorite } = useFavorites()
+  const { scrollVariants, scrollTransition, viewport } = useScrollAnimation()
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -110,11 +115,11 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
   const canAddToCart = selectedColor && selectedSize && isInStock
 
   return (
-    <PageTransition animation="page" className="min-h-screen bg-white pt-16">
+    <MotionPage className="min-h-screen bg-white pt-16">
       {/* Navigation breadcrumb */}
       <nav className="border-b bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <PageTransition animation="text" delay={100}>
+          <MotionFadeIn delay={0.1}>
             <div className="flex items-center text-sm font-terra-body text-gray-600">
               <ViewTransition href="/" className="hover:text-terra-green transition-colors">
                 Accueil
@@ -126,7 +131,7 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
               <span className="mx-2">/</span>
               <span className="text-urban-black">{product.title}</span>
             </div>
-          </PageTransition>
+          </MotionFadeIn>
         </div>
       </nav>
 
@@ -134,10 +139,16 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           {/* Galerie d'images */}
-          <PageTransition animation="content" delay={200}>
+          <MotionSection variant="content" delay={0.2}>
             <div className="space-y-4">
               {/* Image principale */}
-              <div className="aspect-square relative overflow-hidden rounded-lg bg-white">
+              <motion.div
+                className="aspect-square relative overflow-hidden rounded-lg bg-white"
+                variants={productImageVariants}
+                initial="initial"
+                animate="animate"
+                whileHover="hover"
+              >
                 {product.images?.[selectedImageIndex] &&
                   typeof product.images[selectedImageIndex].image === 'object' && (
                     <Image
@@ -147,13 +158,13 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
                       )}
                       alt={product.images[selectedImageIndex].alt || product.title}
                       fill
-                      className="object-contain p-6 transition-terra-smooth"
+                      className="object-contain p-6"
                       priority
                       sizes="(max-width: 768px) 100vw, 50vw"
                       style={{ viewTransitionName: `product-image-${product.slug}` }}
                     />
                   )}
-              </div>
+              </motion.div>
 
               {/* Miniatures */}
               {product.images && product.images.length > 1 && (
@@ -182,10 +193,10 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
                 </div>
               )}
             </div>
-          </PageTransition>
+          </MotionSection>
 
           {/* Informations produit */}
-          <PageTransition animation="content" delay={300}>
+          <MotionSection variant="content" delay={0.3}>
             <div className="space-y-6">
               {/* En-tête */}
               <div>
@@ -290,48 +301,59 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
               {/* Actions */}
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <Button
-                    size="lg"
-                    className={`flex-1 font-terra-display font-semibold py-6 transition-all duration-200 ${
-                      justAdded
-                        ? 'bg-green-600 hover:bg-green-700'
-                        : canAddToCart
-                          ? 'bg-terra-green hover:bg-terra-green/90'
-                          : 'bg-gray-300 cursor-not-allowed'
-                    } text-white`}
-                    onClick={handleAddToCart}
-                    disabled={isAddingToCart || !canAddToCart}
+                  <motion.div
+                    className="flex-1"
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
                   >
-                    {isAddingToCart ? (
-                      <>
-                        <div className="h-5 w-5 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        Ajout en cours...
-                      </>
-                    ) : justAdded ? (
-                      <>
-                        <Check className="mr-2 h-5 w-5" />
-                        Ajouté au panier !
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="mr-2 h-5 w-5" />
-                        Ajouter au panier
-                      </>
-                    )}
-                  </Button>
+                    <Button
+                      size="lg"
+                      className={`w-full font-terra-display font-semibold py-6 transition-all duration-200 ${
+                        justAdded
+                          ? 'bg-green-600 hover:bg-green-700'
+                          : canAddToCart
+                            ? 'bg-terra-green hover:bg-terra-green/90'
+                            : 'bg-gray-300 cursor-not-allowed'
+                      } text-white`}
+                      onClick={handleAddToCart}
+                      disabled={isAddingToCart || !canAddToCart}
+                    >
+                      {isAddingToCart ? (
+                        <>
+                          <div className="h-5 w-5 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          Ajout en cours...
+                        </>
+                      ) : justAdded ? (
+                        <>
+                          <Check className="mr-2 h-5 w-5" />
+                          Ajouté au panier !
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="mr-2 h-5 w-5" />
+                          Ajouter au panier
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
 
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className={`transition-colors duration-200 ${
-                      isFavorite(product.id)
-                        ? 'border-red-500 text-red-500 hover:bg-red-50'
-                        : 'border-terra-green text-terra-green hover:bg-terra-green hover:text-white'
-                    }`}
-                    onClick={handleToggleFavorite}
-                  >
-                    <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
-                  </Button>
+                  <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className={`transition-colors duration-200 ${
+                        isFavorite(product.id)
+                          ? 'border-red-500 text-red-500 hover:bg-red-50'
+                          : 'border-terra-green text-terra-green hover:bg-terra-green hover:text-white'
+                      }`}
+                      onClick={handleToggleFavorite}
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`}
+                      />
+                    </Button>
+                  </motion.div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 text-center py-4 border-t border-gray-200">
@@ -350,7 +372,7 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
                 </div>
               </div>
             </div>
-          </PageTransition>
+          </MotionSection>
         </div>
 
         {/* Onglets détails */}
@@ -407,15 +429,27 @@ export const ProductPageClient: React.FC<ProductPageClientProps> = ({
 
         {/* Produits similaires */}
         {relatedProducts.length > 0 && (
-          <AnimatedSection className="mt-20 pt-16 border-t" title="Vous pourriez aussi aimer">
-            <ProductGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.section
+            className="mt-20 pt-16 border-t"
+            variants={scrollVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+            transition={scrollTransition}
+          >
+            <MotionFadeIn delay={0.1}>
+              <h2 className="text-3xl font-terra-display font-bold text-urban-black mb-8 text-center">
+                Vous pourriez aussi aimer
+              </h2>
+            </MotionFadeIn>
+            <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <TerraProductCard key={relatedProduct.id} product={relatedProduct} />
               ))}
-            </ProductGrid>
-          </AnimatedSection>
+            </MotionGrid>
+          </motion.section>
         )}
       </div>
-    </PageTransition>
+    </MotionPage>
   )
 }

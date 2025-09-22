@@ -1,16 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { 
-  Leaf, 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Youtube,
-  Mail,
-  Phone,
-  MapPin
-} from 'lucide-react'
+import { CookieSettingsButton } from './CookieSettingsButton'
+import { Leaf, Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from 'lucide-react'
 
 export const TerraFooter: React.FC = () => {
   const footerSections = [
@@ -21,7 +13,7 @@ export const TerraFooter: React.FC = () => {
         { name: 'TERRA Move', href: '/collections/move' },
         { name: 'TERRA Limited', href: '/collections/limited' },
         { name: 'Tous les produits', href: '/products' },
-      ]
+      ],
     },
     {
       title: 'TERRA',
@@ -30,7 +22,7 @@ export const TerraFooter: React.FC = () => {
         { name: 'Notre impact', href: '/our-impact' },
         { name: 'Carrières', href: '/careers' },
         { name: 'Presse', href: '/press' },
-      ]
+      ],
     },
     {
       title: 'Support',
@@ -39,7 +31,7 @@ export const TerraFooter: React.FC = () => {
         { name: 'Livraison & Retours', href: '/shipping' },
         { name: 'FAQ', href: '/faq' },
         { name: 'Contact', href: '/contact' },
-      ]
+      ],
     },
     {
       title: 'Légal',
@@ -48,8 +40,8 @@ export const TerraFooter: React.FC = () => {
         { name: 'Politique de confidentialité', href: '/privacy' },
         { name: 'CGV', href: '/terms' },
         { name: 'Cookies', href: '/cookies' },
-      ]
-    }
+      ],
+    },
   ]
 
   const socialLinks = [
@@ -71,7 +63,7 @@ export const TerraFooter: React.FC = () => {
             <p className="font-terra-body text-white/90 mb-8 text-lg">
               Recevez nos nouveautés, conseils durables et l'actualité de notre impact positif
             </p>
-            
+
             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto mb-6">
               <input
                 type="email"
@@ -87,9 +79,9 @@ export const TerraFooter: React.FC = () => {
                 S'abonner
               </Button>
             </form>
-            
+
             <p className="text-sm font-terra-body text-white/70">
-              En vous abonnant, vous acceptez de recevoir nos communications. 
+              En vous abonnant, vous acceptez de recevoir nos communications.
               <Link href="/privacy" className="underline hover:no-underline">
                 Politique de confidentialité
               </Link>
@@ -107,13 +99,12 @@ export const TerraFooter: React.FC = () => {
               <div className="w-10 h-10 bg-terra-green rounded-full flex items-center justify-center">
                 <Leaf className="h-6 w-6 text-white" />
               </div>
-              <span className="text-3xl font-terra-display font-bold text-white">
-                TERRA
-              </span>
+              <span className="text-3xl font-terra-display font-bold text-white">TERRA</span>
             </Link>
-            
+
             <p className="font-terra-body text-gray-300 mb-6 leading-relaxed">
-              Sneakers. Grounded in Purpose.<br />
+              Sneakers. Grounded in Purpose.
+              <br />
               Style urbain, conscience environnementale.
             </p>
 
@@ -137,9 +128,7 @@ export const TerraFooter: React.FC = () => {
           {/* Footer Links */}
           {footerSections.map((section, index) => (
             <div key={section.title}>
-              <h4 className="font-terra-display font-semibold text-white mb-6">
-                {section.title}
-              </h4>
+              <h4 className="font-terra-display font-semibold text-white mb-6">{section.title}</h4>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
@@ -161,9 +150,7 @@ export const TerraFooter: React.FC = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
             {/* Social Links */}
             <div>
-              <h4 className="font-terra-display font-semibold text-white mb-4">
-                Suivez-nous
-              </h4>
+              <h4 className="font-terra-display font-semibold text-white mb-4">Suivez-nous</h4>
               <div className="flex space-x-4">
                 {socialLinks.map((social) => (
                   <Link
@@ -181,9 +168,7 @@ export const TerraFooter: React.FC = () => {
 
             {/* Certifications */}
             <div>
-              <h4 className="font-terra-display font-semibold text-white mb-4">
-                Nos engagements
-              </h4>
+              <h4 className="font-terra-display font-semibold text-white mb-4">Nos engagements</h4>
               <div className="flex flex-wrap gap-4">
                 <div className="bg-gray-800 px-3 py-2 rounded-lg">
                   <span className="text-xs font-terra-body text-gray-300">B Corp Certified</span>
@@ -203,17 +188,41 @@ export const TerraFooter: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <p className="font-terra-body text-gray-400 text-sm">
-            © 2024 TERRA. Tous droits réservés. Sneakers écoresponsables fabriquées avec ❤️ en Europe.
-          </p>
-          
-          <div className="flex items-center space-x-4 text-sm font-terra-body text-gray-400">
-            <span>🌱 60% matériaux recyclés</span>
-            <span>•</span>
-            <span>🌍 Fabrication européenne</span>
-            <span>•</span>
-            <span>🌳 3 arbres plantés/paire</span>
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+            <p className="font-terra-body text-gray-400 text-sm">
+              © 2024 TERRA. Tous droits réservés. Sneakers écoresponsables fabriquées avec ❤️ en
+              Europe.
+            </p>
+
+            <div className="flex items-center space-x-4 text-sm font-terra-body text-gray-400">
+              <span>🌱 60% matériaux recyclés</span>
+              <span>•</span>
+              <span>🌍 Fabrication européenne</span>
+              <span>•</span>
+              <span>🌳 3 arbres plantés/paire</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-gray-800">
+            <div className="flex flex-wrap gap-4 text-sm font-terra-body text-gray-400">
+              <Link href="/legal" className="hover:text-terra-green transition-colors">
+                Mentions légales
+              </Link>
+              <Link href="/privacy" className="hover:text-terra-green transition-colors">
+                Confidentialité
+              </Link>
+              <Link href="/terms" className="hover:text-terra-green transition-colors">
+                CGV
+              </Link>
+              <Link href="/cookies" className="hover:text-terra-green transition-colors">
+                Cookies
+              </Link>
+            </div>
+
+            <div className="flex-shrink-0">
+              <CookieSettingsButton />
+            </div>
           </div>
         </div>
       </div>
