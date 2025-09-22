@@ -18,7 +18,8 @@ export default function ContactPage() {
             Contactez-nous
           </h1>
           <p className="text-lg font-terra-body text-gray-600 max-w-2xl mx-auto">
-            Une question, une suggestion, ou besoin d'aide ? Notre équipe TERRA est là pour vous accompagner.
+            Une question, une suggestion, ou besoin d'aide ? Notre équipe TERRA est là pour vous
+            accompagner.
           </p>
         </div>
 
@@ -32,7 +33,10 @@ export default function ContactPage() {
             <form className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="firstName" className="block font-terra-display font-semibold text-urban-black mb-2">
+                  <label
+                    htmlFor="firstName"
+                    className="block font-terra-display font-semibold text-urban-black mb-2"
+                  >
                     Prénom *
                   </label>
                   <input
@@ -45,7 +49,10 @@ export default function ContactPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block font-terra-display font-semibold text-urban-black mb-2">
+                  <label
+                    htmlFor="lastName"
+                    className="block font-terra-display font-semibold text-urban-black mb-2"
+                  >
                     Nom *
                   </label>
                   <input
@@ -60,7 +67,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block font-terra-display font-semibold text-urban-black mb-2">
+                <label
+                  htmlFor="email"
+                  className="block font-terra-display font-semibold text-urban-black mb-2"
+                >
                   Email *
                 </label>
                 <input
@@ -74,7 +84,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block font-terra-display font-semibold text-urban-black mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block font-terra-display font-semibold text-urban-black mb-2"
+                >
                   Téléphone
                 </label>
                 <input
@@ -87,7 +100,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="subject" className="block font-terra-display font-semibold text-urban-black mb-2">
+                <label
+                  htmlFor="subject"
+                  className="block font-terra-display font-semibold text-urban-black mb-2"
+                >
                   Sujet *
                 </label>
                 <select
@@ -108,7 +124,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="orderNumber" className="block font-terra-display font-semibold text-urban-black mb-2">
+                <label
+                  htmlFor="orderNumber"
+                  className="block font-terra-display font-semibold text-urban-black mb-2"
+                >
                   Numéro de commande (si applicable)
                 </label>
                 <input
@@ -121,7 +140,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block font-terra-display font-semibold text-urban-black mb-2">
+                <label
+                  htmlFor="message"
+                  className="block font-terra-display font-semibold text-urban-black mb-2"
+                >
                   Message *
                 </label>
                 <textarea
@@ -155,7 +177,11 @@ export default function ContactPage() {
                   className="mt-1 w-4 h-4 text-terra-green border-gray-300 rounded focus:ring-terra-green"
                 />
                 <label htmlFor="privacy" className="font-terra-body text-gray-700 text-sm">
-                  J'accepte la <a href="/privacy" className="text-terra-green hover:underline">politique de confidentialité</a> et le traitement de mes données personnelles *
+                  J'accepte la{' '}
+                  <a href="/privacy" className="text-terra-green hover:underline">
+                    politique de confidentialité
+                  </a>{' '}
+                  et le traitement de mes données personnelles *
                 </label>
               </div>
 
@@ -187,7 +213,8 @@ export default function ContactPage() {
                         Chat en direct
                       </h3>
                       <p className="font-terra-body text-gray-700 text-sm mb-3">
-                        Discutez directement avec notre équipe customer care pour une réponse immédiate.
+                        Discutez directement avec notre équipe customer care pour une réponse
+                        immédiate.
                       </p>
                       <div className="flex items-center space-x-4 text-sm font-terra-body text-gray-600">
                         <span>Lun-Ven : 9h-18h</span>
@@ -293,7 +320,8 @@ export default function ContactPage() {
                 <p>75001 Paris, France</p>
               </div>
               <p className="text-sm font-terra-body text-gray-600 mt-3">
-                <strong>Note :</strong> Nous n'avons pas de boutique physique. Pour toute question, privilégiez nos canaux de contact en ligne.
+                <strong>Note :</strong> Nous n'avons pas de boutique physique. Pour toute question,
+                privilégiez nos canaux de contact en ligne.
               </p>
             </div>
           </div>
@@ -313,9 +341,7 @@ export default function ContactPage() {
               <div className="w-12 h-12 bg-gray-100 group-hover:bg-terra-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <HelpCircle className="h-6 w-6 text-gray-600 group-hover:text-terra-green" />
               </div>
-              <h3 className="font-terra-display font-semibold text-urban-black mb-2">
-                FAQ
-              </h3>
+              <h3 className="font-terra-display font-semibold text-urban-black mb-2">FAQ</h3>
               <p className="font-terra-body text-gray-600 text-sm">
                 Consultez notre foire aux questions pour trouver rapidement une réponse.
               </p>
@@ -349,7 +375,7 @@ export default function ContactPage() {
               <p className="font-terra-body text-gray-600 text-sm">
                 Toutes les informations sur nos services de livraison.
               </p>
-            </div>
+            </a>
           </div>
 
           {/* Contact specialises */}
@@ -398,10 +424,12 @@ export default function ContactPage() {
 export function generateMetadata(): Metadata {
   return {
     title: 'Contact | TERRA - Sneakers Écoresponsables',
-    description: 'Contactez l\'équipe TERRA. Chat en direct, email, téléphone - nous sommes là pour répondre à toutes vos questions sur nos sneakers écoresponsables.',
+    description:
+      "Contactez l'équipe TERRA. Chat en direct, email, téléphone - nous sommes là pour répondre à toutes vos questions sur nos sneakers écoresponsables.",
     openGraph: {
       title: 'Contact | TERRA',
-      description: 'Une question, une suggestion, ou besoin d\'aide ? Notre équipe TERRA est là pour vous accompagner.',
+      description:
+        "Une question, une suggestion, ou besoin d'aide ? Notre équipe TERRA est là pour vous accompagner.",
     },
   }
 }
