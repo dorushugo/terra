@@ -104,3 +104,4 @@ describe('Simple Product Card Component', () => {
     expect(screen.getByTestId('eco-score')).toHaveTextContent('95')
   })
 })
+

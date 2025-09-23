@@ -264,3 +264,4 @@ describe('Simple Account Hook', () => {
     expect(result.current.state.isAuthenticated).toBe(true)
   })
 })
+
