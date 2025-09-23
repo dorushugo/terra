@@ -2,6 +2,8 @@ import type { CollectionAfterChangeHook, CollectionBeforeChangeHook } from 'payl
 
 // Hook pour créer automatiquement des alertes de stock
 export const createStockAlerts: CollectionAfterChangeHook = async ({ doc, req, operation }) => {
+  // Permet de désactiver ce hook lors d'updates techniques (réservations Stripe, etc.)
+  if (req?.context?.skipStockAlerts) return
   // Seulement pour les produits
   if (operation === 'update' || operation === 'create') {
     if (doc.sizes && Array.isArray(doc.sizes)) {

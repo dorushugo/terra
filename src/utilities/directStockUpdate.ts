@@ -56,6 +56,7 @@ export async function reserveStockDirect(
       data: {
         sizes: product.sizes,
       },
+      context: { skipStockAlerts: true },
     })
 
     console.log(`✅ Stock réservé directement: ${productId} taille ${size} (${quantity} unités)`)
@@ -106,6 +107,7 @@ export async function releaseStockDirect(
       data: {
         sizes: product.sizes,
       },
+      context: { skipStockAlerts: true },
     })
 
     console.log(`✅ Stock libéré directement: ${productId} taille ${size} (${quantity} unités)`)
@@ -161,6 +163,7 @@ export async function decrementStockDirect(
       data: {
         sizes: product.sizes,
       },
+      context: { skipStockAlerts: true },
     })
 
     // Créer un mouvement de stock pour traçabilité (optionnel)
