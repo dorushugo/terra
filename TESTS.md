@@ -8,7 +8,7 @@
 # Commande principale
 pnpm test
 
-# Tests unitaires seulement  
+# Tests unitaires seulement
 pnpm test:unit
 
 # Mode surveillance (développement)
@@ -22,20 +22,24 @@ pnpm test:unit:coverage
 ### 📊 Ce qui est testé
 
 #### ✅ Hooks React (30 tests)
+
 - **useCart** (12 tests) : Gestion du panier e-commerce
 - **useFavorites** (12 tests) : Système de favoris
 - **useAccount** (6 tests) : Authentification utilisateur
 
 #### ✅ Utilitaires (33 tests)
+
 - **Validation** (18 tests) : Emails, téléphones, codes postaux, mots de passe
 - **Formatage** (15 tests) : Prix, éco-scores, slugs, frais de port
 
 #### ✅ Composants (7 tests)
+
 - **ProductCard** : Affichage produits, badges, boutons
 
 ### 🎯 Fonctionnalités validées
 
 **E-commerce Core :**
+
 - ✅ Ajout/suppression produits panier
 - ✅ Calcul totaux et quantités
 - ✅ Persistance localStorage
@@ -44,6 +48,7 @@ pnpm test:unit:coverage
 - ✅ Formatage prix européens
 
 **Qualité :**
+
 - ✅ Gestion des erreurs
 - ✅ Tests des cas limites
 - ✅ Mocks appropriés
@@ -79,5 +84,5 @@ tests/
 
 ---
 
-**🎉 Tests prêts pour la production !**  
-*Tous les tests passent à 100% et valident les fonctionnalités critiques de l'e-commerce.*
+**🎉 Tests prêts pour la production !**
+_Tous les tests passent à 100% et valident les fonctionnalités critiques de l'e-commerce._
