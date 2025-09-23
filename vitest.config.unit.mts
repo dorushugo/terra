@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
+    setupFiles: ['./vitest.setup.unit.ts'],
     include: ['tests/unit/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
@@ -33,4 +33,3 @@ export default defineConfig({
     testTimeout: 10000,
   },
 })
-

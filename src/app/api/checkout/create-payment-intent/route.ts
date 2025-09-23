@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { reserveStockDirect } from '@/utilities/directStockUpdate'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-08-27.basil',
@@ -80,6 +81,9 @@ export async function POST(request: NextRequest) {
             { status: 400 },
           )
         }
+
+        // Réserver temporairement le stock pendant le processus de paiement
+        // (sera fait après la création du PaymentIntent pour avoir l'ID)
       }
 
       totalAmount += (item.product.price || 0) * item.quantity
@@ -132,6 +136,27 @@ export async function POST(request: NextRequest) {
     // En production, utiliser Redis ou une base de données
     global.orderCache = global.orderCache || new Map()
     global.orderCache.set(paymentIntent.id, orderData)
+
+    // Réserver le stock maintenant que nous avons l'ID du PaymentIntent
+    for (const item of items) {
+      if (!String(item.product.id).startsWith('test-')) {
+        try {
+          const success = await reserveStockDirect(item.product.id, item.size, item.quantity)
+
+          if (success) {
+            console.log(
+              `📦 Stock réservé pour paiement: ${item.product.name} taille ${item.size} (${item.quantity} unités)`,
+            )
+          } else {
+            console.error(`❌ Échec réservation stock: ${item.product.name} taille ${item.size}`)
+            // En cas d'échec de réservation, on continue quand même (le stock sera vérifié au webhook)
+          }
+        } catch (error) {
+          console.error(`❌ Erreur réservation stock pour ${item.product.name}:`, error)
+          // En cas d'erreur, on continue quand même
+        }
+      }
+    }
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     environment: 'node',
-    setupFiles: ['./vitest.setup.ts'],
+    setupFiles: ['./vitest.setup.integration.ts'],
     include: ['tests/integration/**/*.int.spec.ts'],
     testTimeout: 30000, // Tests d'intégration plus longs
     maxConcurrency: 1, // Tests séquentiels pour éviter les conflits de DB
@@ -24,4 +24,3 @@ export default defineConfig({
     },
   },
 })
-

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { decrementStockDirect, releaseStockDirect } from '@/utilities/directStockUpdate'
 
 // Déclaration du type global pour le cache des commandes
 declare global {
@@ -129,37 +130,29 @@ export async function POST(request: NextRequest) {
         // Nettoyer le cache après utilisation
         global.orderCache.delete(paymentIntent.id)
 
-        // Réserver le stock pour chaque item
+        // Décrémenter le stock définitivement pour chaque item
         for (const item of cartItems) {
           try {
             if (!item.product.id.startsWith('test-')) {
-              const product = await payload.findByID({
-                collection: 'products',
-                id: item.product.id,
-              })
+              const success = await decrementStockDirect(
+                item.product.id,
+                item.size,
+                item.quantity,
+                order.orderNumber,
+              )
 
-              if (product && product.sizes) {
-                const sizeIndex = product.sizes.findIndex((s: any) => s.size === item.size)
-                if (sizeIndex !== -1) {
-                  const currentReserved = product.sizes[sizeIndex].reservedStock || 0
-                  product.sizes[sizeIndex].reservedStock = currentReserved + item.quantity
-
-                  await payload.update({
-                    collection: 'products',
-                    id: item.product.id,
-                    data: {
-                      sizes: product.sizes,
-                    },
-                  })
-
-                  console.log(
-                    `✅ Stock réservé: ${item.product.name} taille ${item.size} (${item.quantity} unités)`,
-                  )
-                }
+              if (success) {
+                console.log(
+                  `✅ Stock décrémenté: ${item.product.name} taille ${item.size} (${item.quantity} unités)`,
+                )
+              } else {
+                console.error(
+                  `❌ Échec décrémentation stock: ${item.product.name} taille ${item.size}`,
+                )
               }
             }
           } catch (error) {
-            console.error(`❌ Erreur réservation stock pour ${item.product.name}:`, error)
+            console.error(`❌ Erreur décrémentation stock pour ${item.product.name}:`, error)
           }
         }
 
@@ -232,7 +225,7 @@ export async function POST(request: NextRequest) {
 
         console.log('✅ Commande créée:', order.orderNumber)
 
-        // Réserver le stock pour chaque item
+        // Décrémenter le stock définitivement pour chaque item
         for (const item of cartItems) {
           try {
             const product = await payload.findByID({
@@ -243,8 +236,11 @@ export async function POST(request: NextRequest) {
             if (product && product.sizes) {
               const sizeIndex = product.sizes.findIndex((s: any) => s.size === item.size)
               if (sizeIndex !== -1) {
-                const currentReserved = product.sizes[sizeIndex].reservedStock || 0
-                product.sizes[sizeIndex].reservedStock = currentReserved + item.quantity
+                const currentStock = product.sizes[sizeIndex].stock || 0
+                const newStock = Math.max(0, currentStock - item.quantity)
+
+                // Décrémenter le stock réel
+                product.sizes[sizeIndex].stock = newStock
 
                 await payload.update({
                   collection: 'products',
@@ -255,12 +251,29 @@ export async function POST(request: NextRequest) {
                 })
 
                 console.log(
-                  `✅ Stock réservé: ${item.title} taille ${item.size} (${item.quantity} unités)`,
+                  `✅ Stock décrémenté: ${item.title} taille ${item.size} (${currentStock} → ${newStock})`,
                 )
+
+                // Créer un mouvement de stock pour traçabilité
+                await payload.create({
+                  collection: 'stock-movements',
+                  data: {
+                    product: item.product,
+                    size: item.size,
+                    reference: order.orderNumber,
+                    type: 'sale',
+                    quantity: -item.quantity,
+                    stockBefore: currentStock,
+                    stockAfter: newStock,
+                    reason: `Vente - Commande ${order.orderNumber}`,
+                    orderReference: order.orderNumber,
+                    date: new Date().toISOString(),
+                  },
+                })
               }
             }
           } catch (error) {
-            console.error(`❌ Erreur réservation stock pour ${item.title}:`, error)
+            console.error(`❌ Erreur décrémentation stock pour ${item.title}:`, error)
           }
         }
 
@@ -271,9 +284,37 @@ export async function POST(request: NextRequest) {
         const paymentIntent = event.data.object as Stripe.PaymentIntent
         console.log('❌ Paiement échoué:', paymentIntent.id)
 
-        // TODO: Gérer l'échec de paiement
-        // - Notifier le client
-        // - Libérer le stock réservé si applicable
+        // Récupérer les données de commande depuis le cache pour libérer le stock
+        global.orderCache = global.orderCache || new Map()
+        const orderData = global.orderCache.get(paymentIntent.id)
+
+        if (orderData) {
+          const { items: cartItems } = orderData
+
+          // Libérer le stock réservé pour chaque item
+          for (const item of cartItems) {
+            try {
+              if (!item.product.id.startsWith('test-')) {
+                const success = await releaseStockDirect(item.product.id, item.size, item.quantity)
+
+                if (success) {
+                  console.log(
+                    `✅ Stock réservé libéré: ${item.product.name} taille ${item.size} (${item.quantity} unités)`,
+                  )
+                } else {
+                  console.error(
+                    `❌ Échec libération stock: ${item.product.name} taille ${item.size}`,
+                  )
+                }
+              }
+            } catch (error) {
+              console.error(`❌ Erreur libération stock pour ${item.product.name}:`, error)
+            }
+          }
+
+          // Nettoyer le cache
+          global.orderCache.delete(paymentIntent.id)
+        }
 
         break
       }

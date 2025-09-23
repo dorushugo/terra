@@ -1,9 +1,9 @@
-// Any setup scripts you might need go here
+// Setup spécifique pour les tests unitaires (environnement jsdom)
 
 // Load .env files
 import 'dotenv/config'
 
-// Setup Jest-DOM matchers
+// Setup Jest-DOM matchers pour les tests de composants React
 import '@testing-library/jest-dom'
 
 // Extend Vitest matchers

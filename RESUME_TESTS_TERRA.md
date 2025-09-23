@@ -10,6 +10,16 @@
 | **Utilitaires** | 33 tests | ✅ Passent | Validation, formatage             |
 | **Composants**  | 7 tests  | ✅ Passent | ProductCard simplifié             |
 
+### ⚠️ Tests d'intégration (27 tests - En attente de configuration DB)
+
+| Catégorie         | Tests    | Status     | Description              |
+| ----------------- | -------- | ---------- | ------------------------ |
+| **API Auth**      | 9 tests  | ⏳ Skipped | Authentification Payload |
+| **API Produits**  | 10 tests | ⏳ Skipped | CRUD produits            |
+| **API Commandes** | 8 tests  | ⏳ Skipped | Gestion commandes        |
+
+_Note: Les tests d'intégration nécessitent une base de données Payload configurée._
+
 ### 📁 Structure des tests créée
 
 ```
@@ -103,9 +113,10 @@ tests/
 
 ### Configuration
 
-- `vitest.config.unit.mts` : Configuration tests unitaires
-- `vitest.config.integration.mts` : Configuration tests intégration
-- `vitest.setup.ts` : Setup global avec Jest-DOM
+- `vitest.config.unit.mts` : Configuration tests unitaires (environnement jsdom)
+- `vitest.config.integration.mts` : Configuration tests intégration (environnement node)
+- `vitest.setup.unit.ts` : Setup spécifique tests unitaires avec Jest-DOM
+- `vitest.setup.integration.ts` : Setup spécifique tests d'intégration
 - `playwright.config.ts` : Configuration tests E2E
 
 ### Scripts disponibles
@@ -165,6 +176,11 @@ pnpm test:e2e:headed          # Mode headed (debug)
 
 **Problème** : Regex acceptait des emails invalides
 **Solution** : Regex plus stricte et tests ajustés
+
+### 5. Conflit de configuration Jest-DOM
+
+**Problème** : Jest-DOM chargé dans environnement Node.js pour tests d'intégration
+**Solution** : Séparation des setups : `vitest.setup.unit.ts` vs `vitest.setup.integration.ts`
 
 ## 📋 Prochaines étapes recommandées
 

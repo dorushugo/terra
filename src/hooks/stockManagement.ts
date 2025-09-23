@@ -25,38 +25,42 @@ export const createStockAlerts: CollectionAfterChangeHook = async ({ doc, req, o
         }
 
         if (alertType) {
-          // Vérifier si une alerte similaire existe déjà
-          const existingAlert = await req.payload.find({
-            collection: 'stock-alerts',
-            where: {
-              and: [
-                { product: { equals: doc.id } },
-                { size: { equals: size.size } },
-                { alertType: { equals: alertType } },
-                { isResolved: { equals: false } },
-              ],
-            },
-          })
+          try {
+            // Vérifier si une alerte similaire existe déjà
+            const existingAlert = await req.payload.find({
+              collection: 'stock-alerts',
+              where: {
+                and: [
+                  { product: { equals: doc.id } },
+                  { size: { equals: size.size } },
+                  { alertType: { equals: alertType } },
+                  { isResolved: { equals: false } },
+                ],
+              },
+            })
 
-          // Créer l'alerte seulement si elle n'existe pas
-          if (existingAlert.totalDocs === 0) {
-            try {
-              await req.payload.create({
-                collection: 'stock-alerts',
-                data: {
-                  alertType,
-                  priority,
-                  product: doc.id,
-                  size: size.size,
-                  currentStock: availableStock,
-                  threshold,
-                  message,
-                  suggestedQuantity: threshold * 3, // Suggestion de réapprovisionnement
-                },
-              })
-            } catch (error) {
-              console.error("Erreur lors de la création d'alerte:", error)
+            // Créer l'alerte seulement si elle n'existe pas
+            if (existingAlert.totalDocs === 0) {
+              try {
+                await req.payload.create({
+                  collection: 'stock-alerts',
+                  data: {
+                    alertType,
+                    priority,
+                    product: doc.id,
+                    size: size.size,
+                    currentStock: availableStock,
+                    threshold,
+                    message,
+                    suggestedQuantity: threshold * 3, // Suggestion de réapprovisionnement
+                  },
+                })
+              } catch (error) {
+                console.error("Erreur lors de la création d'alerte:", error)
+              }
             }
+          } catch (error) {
+            console.error("Erreur lors de la vérification d'alerte:", error)
           }
         } else {
           // Si le stock est OK, résoudre les alertes existantes
