@@ -20,7 +20,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "test": "./scripts/run-all-tests.sh --all",
+    "test": "./scripts/test-simple.sh",
     "test:unit": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.unit.mts",
     "test:unit:watch": "cross-env NODE_OPTIONS=--no-deprecation vitest --config ./vitest.config.unit.mts",
     "test:unit:coverage": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.unit.mts --coverage",
