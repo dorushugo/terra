@@ -1,171 +1,387 @@
 #!/bin/bash
 
-# 🧪 Script de lancement de tous les tests Terra
-# Ce script lance l'ensemble de la suite de tests : unitaires, intégration et e2e
+# Script principal pour lancer tous les tests TERRA
+# Usage: ./scripts/run-all-tests.sh [--unit|--integration|--e2e|--all] [--watch] [--coverage]
 
-set -e  # Arrêter le script en cas d'erreur
+set -e
 
 # Couleurs pour l'affichage
-GREEN='\033[0;32m'
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Variables
-TEST_RESULTS_DIR="test-results"
-COVERAGE_DIR="coverage"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+TEST_TYPE="all"
+WATCH_MODE=false
+COVERAGE=false
+VERBOSE=false
+CI_MODE=false
 
-echo -e "${BLUE}🧪 TERRA - Suite de Tests Complète${NC}"
-echo -e "${BLUE}====================================${NC}"
-echo ""
+# Fonction d'aide
+show_help() {
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --unit          Exécuter uniquement les tests unitaires"
+    echo "  --integration   Exécuter uniquement les tests d'intégration"
+    echo "  --e2e          Exécuter uniquement les tests E2E"
+    echo "  --all          Exécuter tous les tests (défaut)"
+    echo "  --watch        Mode watch pour les tests unitaires/intégration"
+    echo "  --coverage     Générer un rapport de couverture"
+    echo "  --verbose      Affichage détaillé"
+    echo "  --ci           Mode CI (pas d'interaction)"
+    echo "  --help         Afficher cette aide"
+    echo ""
+    echo "Exemples:"
+    echo "  $0 --unit --watch          # Tests unitaires en mode watch"
+    echo "  $0 --integration --coverage # Tests d'intégration avec couverture"
+    echo "  $0 --e2e                   # Tests E2E uniquement"
+    echo "  $0 --all --coverage        # Tous les tests avec couverture"
+}
 
-# Fonction pour afficher le statut
-print_status() {
-    if [ $1 -eq 0 ]; then
-        echo -e "${GREEN}✅ $2${NC}"
-    else
-        echo -e "${RED}❌ $2${NC}"
+# Parser les arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --unit)
+            TEST_TYPE="unit"
+            shift
+            ;;
+        --integration)
+            TEST_TYPE="integration"
+            shift
+            ;;
+        --e2e)
+            TEST_TYPE="e2e"
+            shift
+            ;;
+        --all)
+            TEST_TYPE="all"
+            shift
+            ;;
+        --watch)
+            WATCH_MODE=true
+            shift
+            ;;
+        --coverage)
+            COVERAGE=true
+            shift
+            ;;
+        --verbose)
+            VERBOSE=true
+            shift
+            ;;
+        --ci)
+            CI_MODE=true
+            shift
+            ;;
+        --help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Option inconnue: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Fonction de log
+log() {
+    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+log_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+log_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+# Vérifier les prérequis
+check_prerequisites() {
+    log "Vérification des prérequis..."
+
+    # Vérifier Node.js
+    if ! command -v node &> /dev/null; then
+        log_error "Node.js n'est pas installé"
+        exit 1
+    fi
+
+    # Vérifier pnpm
+    if ! command -v pnpm &> /dev/null; then
+        log_error "pnpm n'est pas installé"
+        exit 1
+    fi
+
+    # Vérifier que nous sommes dans le bon répertoire
+    if [ ! -f "package.json" ]; then
+        log_error "Ce script doit être exécuté depuis la racine du projet"
+        exit 1
+    fi
+
+    log_success "Prérequis vérifiés"
+}
+
+# Installer les dépendances si nécessaire
+install_dependencies() {
+    if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ]; then
+        log "Installation des dépendances..."
+        pnpm install
+        log_success "Dépendances installées"
     fi
 }
 
-# Fonction pour afficher les statistiques
-print_stats() {
-    echo -e "${BLUE}📊 Statistiques des tests:${NC}"
-    if [ -f "$TEST_RESULTS_DIR/unit-results.json" ]; then
-        echo -e "   ${YELLOW}Tests unitaires:${NC} $(jq '.numTotalTests' $TEST_RESULTS_DIR/unit-results.json 2>/dev/null || echo 'N/A') tests"
+# Préparer l'environnement de test
+setup_test_environment() {
+    log "Préparation de l'environnement de test..."
+
+    # Copier le fichier d'environnement de test s'il existe
+    if [ -f "test.env" ]; then
+        cp test.env .env.test
     fi
-    if [ -f "$TEST_RESULTS_DIR/integration-results.json" ]; then
-        echo -e "   ${YELLOW}Tests d'intégration:${NC} $(jq '.numTotalTests' $TEST_RESULTS_DIR/integration-results.json 2>/dev/null || echo 'N/A') tests"
+
+    # Créer le répertoire de résultats s'il n'existe pas
+    mkdir -p test-results
+    mkdir -p coverage
+
+    log_success "Environnement de test préparé"
+}
+
+# Exécuter les tests unitaires
+run_unit_tests() {
+    log "🧪 Exécution des tests unitaires..."
+
+    local cmd="pnpm vitest"
+    local config_args="--config vitest.config.unit.mts"
+    local pattern_args=""
+
+    if [ "$WATCH_MODE" = true ]; then
+        cmd="$cmd --watch"
+    else
+        cmd="$cmd run"
     fi
-    if [ -f "$TEST_RESULTS_DIR/e2e-results.json" ]; then
-        echo -e "   ${YELLOW}Tests e2e:${NC} $(jq '.numTotalTests' $TEST_RESULTS_DIR/e2e-results.json 2>/dev/null || echo 'N/A') tests"
+
+    if [ "$COVERAGE" = true ]; then
+        cmd="$cmd --coverage"
+    fi
+
+    if [ "$VERBOSE" = true ]; then
+        cmd="$cmd --verbose"
+    fi
+
+    if [ "$CI_MODE" = true ]; then
+        cmd="$cmd --reporter=json --outputFile=test-results/unit-results.json"
+    fi
+
+    eval "$cmd $config_args $pattern_args"
+
+    if [ $? -eq 0 ]; then
+        log_success "Tests unitaires réussis"
+        return 0
+    else
+        log_error "Tests unitaires échoués"
+        return 1
     fi
 }
 
-# Créer les dossiers de résultats
-mkdir -p $TEST_RESULTS_DIR
-mkdir -p $COVERAGE_DIR
+# Exécuter les tests d'intégration
+run_integration_tests() {
+    log "🔗 Exécution des tests d'intégration..."
 
-# Variables pour tracker les résultats
-UNIT_TESTS_PASSED=0
-INTEGRATION_TESTS_PASSED=0
-E2E_TESTS_PASSED=0
-LINT_PASSED=0
+    local cmd="pnpm vitest"
+    local config_args="--config vitest.config.integration.mts"
+    local pattern_args=""
 
-echo -e "${YELLOW}🔧 Vérification de l'environnement...${NC}"
-
-# Vérifier que les dépendances sont installées
-if [ ! -d "node_modules" ]; then
-    echo -e "${YELLOW}📦 Installation des dépendances...${NC}"
-    pnpm install
-fi
-
-# Vérifier les variables d'environnement nécessaires
-if [ ! -f ".env" ] && [ ! -f "test.env" ]; then
-    echo -e "${YELLOW}⚠️  Aucun fichier .env trouvé. Utilisation des valeurs par défaut.${NC}"
-fi
-
-echo ""
-echo -e "${BLUE}🧹 Nettoyage des anciens résultats...${NC}"
-rm -rf $TEST_RESULTS_DIR/*
-rm -rf $COVERAGE_DIR/*
-
-echo ""
-echo -e "${BLUE}📝 Linting et vérifications de code...${NC}"
-if pnpm run lint; then
-    LINT_PASSED=1
-    print_status 0 "Linting"
-else
-    print_status 1 "Linting"
-fi
-
-echo ""
-echo -e "${BLUE}🧪 Tests unitaires...${NC}"
-echo -e "${YELLOW}Tests des composants, hooks et utilitaires${NC}"
-if pnpm run test:unit --reporter=json --outputFile=$TEST_RESULTS_DIR/unit-results.json --coverage --coverage.reportsDirectory=$COVERAGE_DIR/unit; then
-    UNIT_TESTS_PASSED=1
-    print_status 0 "Tests unitaires"
-else
-    print_status 1 "Tests unitaires"
-fi
-
-echo ""
-echo -e "${BLUE}🔗 Tests d'intégration...${NC}"
-echo -e "${YELLOW}Tests des APIs et intégrations${NC}"
-if pnpm run test:int --reporter=json --outputFile=$TEST_RESULTS_DIR/integration-results.json; then
-    INTEGRATION_TESTS_PASSED=1
-    print_status 0 "Tests d'intégration"
-else
-    print_status 1 "Tests d'intégration"
-fi
-
-echo ""
-echo -e "${BLUE}🌐 Tests end-to-end...${NC}"
-echo -e "${YELLOW}Tests du parcours utilisateur complet${NC}"
-
-# Démarrer le serveur de développement en arrière-plan pour les tests e2e
-echo -e "${YELLOW}🚀 Démarrage du serveur de test...${NC}"
-pnpm run dev &
-SERVER_PID=$!
-
-# Attendre que le serveur soit prêt
-echo -e "${YELLOW}⏳ Attente du démarrage du serveur...${NC}"
-sleep 10
-
-# Vérifier que le serveur est accessible
-if curl -s http://localhost:3000 > /dev/null; then
-    echo -e "${GREEN}✅ Serveur prêt${NC}"
-
-    if pnpm run test:e2e --reporter=json --outputFile=$TEST_RESULTS_DIR/e2e-results.json; then
-        E2E_TESTS_PASSED=1
-        print_status 0 "Tests e2e"
+    if [ "$WATCH_MODE" = true ]; then
+        cmd="$cmd --watch"
     else
-        print_status 1 "Tests e2e"
+        cmd="$cmd run"
     fi
-else
-    echo -e "${RED}❌ Impossible de démarrer le serveur${NC}"
-    E2E_TESTS_PASSED=0
-fi
 
-# Arrêter le serveur
-kill $SERVER_PID 2>/dev/null || true
-wait $SERVER_PID 2>/dev/null || true
+    if [ "$COVERAGE" = true ]; then
+        cmd="$cmd --coverage"
+    fi
 
-echo ""
-echo -e "${BLUE}📊 Génération du rapport de couverture...${NC}"
-if command -v nyc &> /dev/null; then
-    nyc merge $COVERAGE_DIR/unit $COVERAGE_DIR/merged.json
-    nyc report --reporter=html --reporter=text-summary --report-dir=$COVERAGE_DIR/html
-    echo -e "${GREEN}✅ Rapport de couverture généré dans $COVERAGE_DIR/html${NC}"
-fi
+    if [ "$VERBOSE" = true ]; then
+        cmd="$cmd --verbose"
+    fi
 
-echo ""
-echo -e "${BLUE}📋 RÉSUMÉ DES TESTS${NC}"
-echo -e "${BLUE}==================${NC}"
-print_stats
+    if [ "$CI_MODE" = true ]; then
+        cmd="$cmd --reporter=json --outputFile=test-results/integration-results.json"
+    fi
 
-echo ""
-print_status $LINT_PASSED "Linting"
-print_status $UNIT_TESTS_PASSED "Tests unitaires"
-print_status $INTEGRATION_TESTS_PASSED "Tests d'intégration"
-print_status $E2E_TESTS_PASSED "Tests end-to-end"
+    eval "$cmd $config_args $pattern_args"
 
-# Calculer le score global
-TOTAL_SCORE=$((LINT_PASSED + UNIT_TESTS_PASSED + INTEGRATION_TESTS_PASSED + E2E_TESTS_PASSED))
+    if [ $? -eq 0 ]; then
+        log_success "Tests d'intégration réussis"
+        return 0
+    else
+        log_error "Tests d'intégration échoués"
+        return 1
+    fi
+}
 
-echo ""
-if [ $TOTAL_SCORE -eq 4 ]; then
-    echo -e "${GREEN}🎉 TOUS LES TESTS SONT PASSÉS ! (4/4)${NC}"
-    echo -e "${GREEN}🚀 Votre code est prêt pour la production !${NC}"
-    exit 0
-elif [ $TOTAL_SCORE -ge 2 ]; then
-    echo -e "${YELLOW}⚠️  TESTS PARTIELLEMENT RÉUSSIS ($TOTAL_SCORE/4)${NC}"
-    echo -e "${YELLOW}🔧 Veuillez corriger les tests en échec${NC}"
-    exit 1
-else
-    echo -e "${RED}💥 ÉCHEC DES TESTS ($TOTAL_SCORE/4)${NC}"
-    echo -e "${RED}🚨 Action requise pour corriger les problèmes${NC}"
-    exit 1
-fi
+# Exécuter les tests E2E
+run_e2e_tests() {
+    log "🌐 Exécution des tests E2E..."
+
+    # Vérifier si le serveur de dev est déjà en cours
+    if ! curl -s http://localhost:3000 > /dev/null; then
+        log "Démarrage du serveur de développement..."
+        pnpm dev &
+        DEV_SERVER_PID=$!
+
+        # Attendre que le serveur soit prêt
+        for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+                log_success "Serveur de développement prêt"
+                break
+            fi
+            sleep 2
+        done
+
+        if [ $i -eq 30 ]; then
+            log_error "Le serveur de développement n'a pas pu démarrer"
+            return 1
+        fi
+    fi
+
+    local cmd="pnpm playwright test"
+
+    if [ "$VERBOSE" = true ]; then
+        cmd="$cmd --verbose"
+    fi
+
+    if [ "$CI_MODE" = true ]; then
+        cmd="$cmd --reporter=json"
+    else
+        cmd="$cmd --headed"
+    fi
+
+    eval "$cmd"
+    local exit_code=$?
+
+    # Arrêter le serveur de dev si on l'a démarré
+    if [ ! -z "$DEV_SERVER_PID" ]; then
+        kill $DEV_SERVER_PID
+        wait $DEV_SERVER_PID 2>/dev/null
+    fi
+
+    if [ $exit_code -eq 0 ]; then
+        log_success "Tests E2E réussis"
+        return 0
+    else
+        log_error "Tests E2E échoués"
+        return 1
+    fi
+}
+
+# Générer le rapport de test
+generate_report() {
+    if [ "$CI_MODE" = false ]; then
+        return 0
+    fi
+
+    log "📊 Génération du rapport de test..."
+
+    # Créer un rapport HTML simple
+    cat > test-results/report.html << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rapport de Tests TERRA</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .success { color: green; }
+        .error { color: red; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Rapport de Tests TERRA</h1>
+    <p>Généré le $(date)</p>
+
+    <div class="section">
+        <h2>Résultats</h2>
+        <p>Type de test exécuté: $TEST_TYPE</p>
+        <p>Mode coverage: $COVERAGE</p>
+    </div>
+</body>
+</html>
+EOF
+
+    log_success "Rapport généré dans test-results/report.html"
+}
+
+# Fonction principale
+main() {
+    echo -e "${BLUE}"
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║                    🌱 TERRA TEST SUITE 🌱                    ║"
+    echo "║              Tests pour l'e-commerce écoresponsable          ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    echo -e "${NC}"
+
+    check_prerequisites
+    install_dependencies
+    setup_test_environment
+
+    local exit_code=0
+
+    case $TEST_TYPE in
+        "unit")
+            run_unit_tests || exit_code=1
+            ;;
+        "integration")
+            run_integration_tests || exit_code=1
+            ;;
+        "e2e")
+            run_e2e_tests || exit_code=1
+            ;;
+        "all")
+            log "🚀 Exécution de tous les tests..."
+
+            run_unit_tests || exit_code=1
+
+            if [ $exit_code -eq 0 ]; then
+                run_integration_tests || exit_code=1
+            fi
+
+            if [ $exit_code -eq 0 ] && [ "$WATCH_MODE" = false ]; then
+                run_e2e_tests || exit_code=1
+            fi
+            ;;
+    esac
+
+    generate_report
+
+    if [ $exit_code -eq 0 ]; then
+        echo -e "${GREEN}"
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║                   🎉 TOUS LES TESTS RÉUSSIS! 🎉              ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        echo -e "${NC}"
+    else
+        echo -e "${RED}"
+        echo "╔══════════════════════════════════════════════════════════════╗"
+        echo "║                   ❌ CERTAINS TESTS ONT ÉCHOUÉ               ║"
+        echo "╚══════════════════════════════════════════════════════════════╝"
+        echo -e "${NC}"
+    fi
+
+    exit $exit_code
+}
+
+# Piège pour nettoyer en cas d'interruption
+trap 'echo -e "\n${YELLOW}Tests interrompus par l utilisateur${NC}"; exit 130' INT
+
+# Exécuter le script principal
+main "$@"

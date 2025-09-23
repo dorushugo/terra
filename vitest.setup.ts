@@ -1,28 +1,13 @@
-// Configuration globale pour les tests Vitest
+// Any setup scripts you might need go here
 
 // Load .env files
 import 'dotenv/config'
 
-// Import des utilitaires de test globaux
-import { beforeEach, afterEach, vi } from 'vitest'
+// Setup Jest-DOM matchers
+import '@testing-library/jest-dom'
 
-// Configuration des mocks globaux
-beforeEach(() => {
-  // Mock de fetch global
-  global.fetch = vi.fn()
+// Extend Vitest matchers
+import { expect } from 'vitest'
+import * as matchers from '@testing-library/jest-dom/matchers'
 
-  // Mock de console pour éviter les logs de test
-  vi.spyOn(console, 'log').mockImplementation(() => {})
-  vi.spyOn(console, 'warn').mockImplementation(() => {})
-  vi.spyOn(console, 'error').mockImplementation(() => {})
-})
-
-afterEach(() => {
-  // Nettoyage après chaque test
-  vi.clearAllMocks()
-  vi.restoreAllMocks()
-})
-
-// Mock des variables d'environnement pour les tests
-process.env.NODE_ENV = 'test'
-process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
+expect.extend(matchers)
